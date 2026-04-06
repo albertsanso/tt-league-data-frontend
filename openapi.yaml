@@ -1,0 +1,975 @@
+openapi: 3.0.3
+info:
+  title: tt-data-league-api
+  version: v1
+  description: |
+    OpenAPI 3 specification inferred from the `tt-data-league-api-rest` module.
+    This file was generated from controller and DTO records and includes
+    example payloads and required properties where applicable.
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server (inferred)
+tags:
+  - name: Club API
+    description: Endpoints for managing clubs in the table tennis league
+  - name: Club Member API
+    description: Endpoints for managing club members in the table tennis league
+  - name: Season Player API
+    description: Endpoints for managing season players in the table tennis league
+  - name: Match API
+    description: Endpoints for managing matches in the table tennis league
+  - name: Season Player Result API
+    description: Endpoints for managing season player results in the table tennis league
+  - name: Auth API
+    description: Endpoints for authentication
+paths:
+  /club/find_by_id:
+    get:
+      tags: [Club API]
+      summary: Find club by id
+      description: Returns a club by its UUID
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Club UUID
+      responses:
+        '200':
+          description: Club found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club/find_by_name:
+    get:
+      tags: [Club API]
+      summary: Find club by exact name
+      description: Returns a club that matches the exact name
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Club found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club/find_by_similar_name:
+    get:
+      tags: [Club API]
+      summary: Find clubs by similar name
+      description: Search clubs with a name similar to the provided value
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of clubs (may be empty)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClubDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club:
+    post:
+      tags: [Club API]
+      summary: Create a club
+      description: Create a new club from ClubDto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClubDto'
+            example:
+              id: "00000000-0000-0000-0000-000000000001"
+              name: "CTT Example"
+              yearRanges: ["2023-2024"]
+      responses:
+        '200':
+          description: Created club
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Club API]
+      summary: Modify a club
+      description: Modify an existing club using ClubDto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClubDto'
+      responses:
+        '200':
+          description: Modified club
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club/{id}:
+    delete:
+      tags: [Club API]
+      summary: Delete a club by id
+      description: Delete an existing club by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deleted successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club_member:
+    post:
+      tags: [Club Member API]
+      summary: Create a club member
+      description: Create a new club member from ClubMemberDto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClubMemberDto'
+            example:
+              clubId: "00000000-0000-0000-0000-000000000002"
+              practicionerId: "00000000-0000-0000-0000-000000000010"
+              yearRanges: ["2023-2024"]
+      responses:
+        '200':
+          description: Created club member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubMemberDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club_member/find_by_club_id/{clubId}:
+    get:
+      tags: [Club Member API]
+      summary: Get club members by club id
+      description: Returns list of club members for a club
+      parameters:
+        - name: clubId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of club members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClubMemberDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club_member/enriched/find_by_club_id/{clubId}:
+    get:
+      tags: [Club Member API]
+      summary: Get enriched club members by club id
+      description: Returns enriched members with practicioner and club details
+      parameters:
+        - name: clubId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of enriched club members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnrichedClubMemberDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /club_member/find_by_practicioner_id/{practicionerId}:
+    get:
+      tags: [Club Member API]
+      summary: Get club members by practicioner id
+      description: Returns list of club members for the practicioner
+      parameters:
+        - name: practicionerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of club members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClubMemberDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /season_player:
+    post:
+      tags: [Season Player API]
+      summary: Create a season player
+      description: Create a season player from SeasonPlayerDto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonPlayerDto'
+            example:
+              clubMemberId: "00000000-0000-0000-0000-000000000002"
+              licenseId: "L-1234"
+              licenseTag: "senior"
+              yearRange: "2023-2024"
+      responses:
+        '200':
+          description: Created season player
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonPlayerDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /season_player/{id}:
+    get:
+      tags: [Season Player API]
+      summary: Get season player by id
+      description: Returns a season player by UUID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Season player
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonPlayerDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Season Player API]
+      summary: Delete season player
+      description: Delete a season player by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Deleted (no content)
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /season_player/search_by_name/{username}:
+    get:
+      tags: [Season Player API]
+      summary: Search season players by name
+      description: Search players by similar name
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of season players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeasonPlayerDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /season_player/search_by_names/{names}:
+    get:
+      tags: [Season Player API]
+      summary: Search season players by names
+      description: Search by a list of names (comma-separated)
+      parameters:
+        - name: names
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Comma-separated list of names (e.g. "Alice,Bob")
+      responses:
+        '200':
+          description: List of season players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeasonPlayerDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /season_player/find_by_license:
+    post:
+      tags: [Season Player API]
+      summary: Find season players by license
+      description: Return players matching license info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicenseDto'
+            example:
+              licenseId: "L-1234"
+              licenseTag: "senior"
+      responses:
+        '200':
+          description: List of season players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeasonPlayerDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /season_player/find_by_practicioner/{practicionerId}:
+    get:
+      tags: [Season Player API]
+      summary: Find season players by practicioner id
+      description: Return season players for a practicioner
+      parameters:
+        - name: practicionerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of season players
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeasonPlayerDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /match/{id}:
+    get:
+      tags: [Match API]
+      summary: Get match by id
+      description: Return a simple match DTO by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /match/enriched/find_matches:
+    post:
+      tags: [Match API]
+      summary: Find enriched matches
+      description: Find matches enriched with season player results by criteria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindMatchesRequestBodyDto'
+            example:
+              season: "2023-2024"
+              competitionType: "league"
+              competitionCategory: "senior"
+              competitionScope: "regional"
+              competitionScopeTag: "A"
+              competitionGroup: "group-1"
+              competitionGender: "male"
+              matchDayNumber: 5
+      responses:
+        '200':
+          description: List of enriched matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnrichedMatchDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /player_result:
+    post:
+      tags: [Season Player Result API]
+      summary: Create a season player result
+      description: Create a SeasonPlayerResult from DTO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonPlayerResultDto'
+      responses:
+        '200':
+          description: Created season player result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonPlayerResultDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/register:
+    post:
+      tags: [Auth API]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '200':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/login:
+    post:
+      tags: [Auth API]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/logout:
+    post:
+      tags: [Auth API]
+      summary: Logout user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ClubDto:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000001"
+        name:
+          type: string
+          example: "CTT Example"
+        yearRanges:
+          type: array
+          items:
+            type: string
+          example: ["2023-2024"]
+    ClubMemberDto:
+      type: object
+      required: [id, clubId, practicionerId]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000020"
+        clubId:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000002"
+        practicionerId:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000010"
+        yearRanges:
+          type: array
+          items:
+            type: string
+          example: ["2023-2024"]
+    EnrichedClubMemberDto:
+      type: object
+      required: [id, club, practicioner]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000030"
+        club:
+          $ref: '#/components/schemas/ClubDto'
+        practicioner:
+          $ref: '#/components/schemas/PracticionerDto'
+        yearRanges:
+          type: array
+          items:
+            type: string
+          example: ["2023-2024"]
+    PracticionerDto:
+      type: object
+      required: [id, fullName]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000010"
+        firstName:
+          type: string
+          example: "Juan"
+        secondName:
+          type: string
+          example: "Perez"
+        fullName:
+          type: string
+          example: "Juan Perez"
+        birthDate:
+          type: string
+          format: date
+          example: "1990-05-01"
+    SeasonPlayerDto:
+      type: object
+      required: [id, clubMemberId, licenseId, licenseTag, yearRange]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000050"
+        clubMemberId:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000002"
+        licenseId:
+          type: string
+          example: "L-1234"
+        licenseTag:
+          type: string
+          example: "senior"
+        yearRange:
+          type: string
+          example: "2023-2024"
+    LicenseDto:
+      type: object
+      required: [licenseId]
+      properties:
+        licenseId:
+          type: string
+          example: "L-1234"
+        licenseTag:
+          type: string
+          example: "senior"
+    MatchDto:
+      type: object
+      required: [id, homeTeam, awayTeam, matchDate]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000060"
+        homeTeam:
+          type: string
+          example: "Team A"
+        awayTeam:
+          type: string
+          example: "Team B"
+        homeScore:
+          type: integer
+          example: 3
+        awayScore:
+          type: integer
+          example: 2
+        matchDate:
+          type: string
+          format: date
+          example: "2024-06-15"
+    CompetitionInfoDto:
+      type: object
+      properties:
+        type:
+          type: string
+        category:
+          type: string
+        scope:
+          type: string
+        scopeTag:
+          type: string
+        group:
+          type: string
+        gender:
+          type: string
+    FindMatchesRequestBodyDto:
+      type: object
+      required: [season, matchDayNumber]
+      properties:
+        season:
+          type: string
+          example: "2023-2024"
+        competitionType:
+          type: string
+          example: "league"
+        competitionCategory:
+          type: string
+          example: "senior"
+        competitionScope:
+          type: string
+          example: "regional"
+        competitionScopeTag:
+          type: string
+          example: "A"
+        competitionGroup:
+          type: string
+          example: "group-1"
+        competitionGender:
+          type: string
+          example: "male"
+        matchDayNumber:
+          type: integer
+          example: 5
+        practitionerName:
+          type: string
+          example: "John Doe"
+    MatchSeasonPlayerResultDto:
+      type: object
+      properties:
+        seasonPlayer:
+          $ref: '#/components/schemas/SeasonPlayerDto'
+        matchDay:
+          type: string
+        matchDayNumber:
+          type: integer
+        matchGamePoints:
+          type: string
+        matchGamesWon:
+          type: integer
+        matchPlayerLetter:
+          type: string
+    EnrichedMatchDto:
+      type: object
+      required: [id, season, competitionInfo, matchDayNumber]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "00000000-0000-0000-0000-000000000070"
+        playerLocalResultDto:
+          $ref: '#/components/schemas/MatchSeasonPlayerResultDto'
+        playerVisitorResultDto:
+          $ref: '#/components/schemas/MatchSeasonPlayerResultDto'
+        season:
+          type: string
+          example: "2023-2024"
+        competitionInfo:
+          $ref: '#/components/schemas/CompetitionInfoDto'
+        matchDayNumber:
+          type: integer
+          example: 5
+        uniqueRowMatchId:
+          type: string
+          example: "row-12345"
+    SeasonPlayerResultDto:
+      type: object
+      properties:
+        competitionInfo:
+          $ref: '#/components/schemas/CompetitionInfoDto'
+        seasonPlayer:
+          $ref: '#/components/schemas/SeasonPlayerDto'
+        matchDay:
+          type: string
+        matchDayNumber:
+          type: integer
+        matchGamePoints:
+          type: string
+        matchGamesWon:
+          type: integer
+        matchLinkageId:
+          type: string
+        matchPlayerLetter:
+          type: string
+    Users:
+      type: object
+      required: [username, password]
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "user123"
+        password:
+          type: string
+          example: "password123"
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        type:
+          type: string
+          example: "Bearer"
+        username:
+          type: string
+          example: "user123"
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: "INTERNAL_ERROR"
+        message:
+          type: string
+          example: "An unexpected server error occurred"
+        details:
+          type: object
+          additionalProperties: true
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+

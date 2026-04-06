@@ -58,6 +58,45 @@ Any open questions, design decisions, or links.
 
 ## Backlog
 
+---
+
+### [FEAT-001] Access control and Navigation
+- **Status:** idea
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** —
+
+#### Goal
+Allow users to sign up, log in, and maintain a session so the app can show personalised content.
+
+#### User Personas
+- **Guest:** Unauthenticated user who can only see public content.
+- **Member:** Authenticated user with access to the dashboard and settings.
+
+#### Navigation & Access Control
+- **Public Routes:** - Landing Page (`/`): Public features.
+  - Login Page (`/login`): Simple email/password entry.
+  - Sign up alternative link (`/register`):  Simple email/password entry.
+- **Protected Routes:**
+  - Dashboard (`/dashboard`): Primary data visualization.
+  - Settings (`/settings`): User profile and app preferences.
+- **Security Rule:** Any attempt to access `/dashboard` or `/settings` without a valid session must redirect the user to `/login`.
+
+#### Acceptance Criteria
+- [ ] User can register with email + password
+- [ ] User can log in and receive a JWT/Bearer token
+- [ ] Protected routes redirect unauthenticated users to `/login`
+- [ ] Session persists on page refresh
+
+#### Build Plan
+TODO
+
+#### Notes
+- API spec defined in `openapi.yaml` (root folder), backend base URL: `http://localhost:8080/api/v1`
+- **CORS:** Vite proxy rewrites `/api/v1/*` requests as same-origin in dev — no CORS headers needed. Set `VITE_API_BASE_URL` in production to point at the real API host
+- Refresh token strategy to be decided before marking `done`
+
+---
 
 ## Done
 
