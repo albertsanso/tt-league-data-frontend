@@ -1,27 +1,38 @@
 import { createBrowserRouter } from 'react-router-dom'
 import App from './App'
+import { ProtectedRoute } from './components/features/auth/ProtectedRoute'
 
-// Pages — add feature routes here
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [
+      // Public routes
       {
         index: true,
         lazy: () => import('./pages/Home').then((m) => ({ Component: m.Home })),
       },
       {
-        path: 'clubs',
-        lazy: () => import('./pages/Clubs').then((m) => ({ Component: m.Clubs })),
+        path: 'login',
+        lazy: () => import('./pages/Login').then((m) => ({ Component: m.Login })),
       },
       {
-        path: 'players',
-        lazy: () => import('./pages/Players').then((m) => ({ Component: m.Players })),
+        path: 'register',
+        lazy: () => import('./pages/Register').then((m) => ({ Component: m.Register })),
       },
+      // Protected routes
       {
-        path: 'matches',
-        lazy: () => import('./pages/Matches').then((m) => ({ Component: m.Matches })),
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: 'dashboard',
+            lazy: () => import('./pages/Dashboard').then((m) => ({ Component: m.Dashboard })),
+          },
+          {
+            path: 'settings',
+            lazy: () => import('./pages/Settings').then((m) => ({ Component: m.Settings })),
+          },
+        ],
       },
     ],
   },

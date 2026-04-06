@@ -1,9 +1,8 @@
+import { apiBase } from '../lib/api'
 import type { PlayersSingleMatch } from '../types'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL
-
-export async function fetchMatches(): Promise<PlayersSingleMatch[]> {
-  const res = await fetch(`${BASE_URL}/matches`)
-  if (!res.ok) throw new Error('Failed to fetch matches')
-  return res.json() as Promise<PlayersSingleMatch[]>
+export async function fetchMatchById(id: string): Promise<PlayersSingleMatch> {
+  const res = await fetch(`${apiBase}/api/v1/match/${encodeURIComponent(id)}`)
+  if (!res.ok) throw new Error('Failed to fetch match')
+  return res.json() as Promise<PlayersSingleMatch>
 }

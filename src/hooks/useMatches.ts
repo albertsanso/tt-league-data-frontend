@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react'
-import { fetchMatches } from '../services/matches'
+import { fetchMatchById } from '../services/matches'
 import type { PlayersSingleMatch } from '../types'
 
-export function useMatches() {
-  const [matches, setMatches] = useState<PlayersSingleMatch[]>([])
+export function useMatch(id: string) {
+  const [match, setMatch] = useState<PlayersSingleMatch | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchMatches()
-      .then(setMatches)
+    fetchMatchById(id)
+      .then(setMatch)
       .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Unknown error'))
       .finally(() => setLoading(false))
-  }, [])
+  }, [id])
 
-  return { matches, loading, error }
+  return { match, loading, error }
 }

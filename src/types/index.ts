@@ -31,3 +31,19 @@ export interface PlayersSingleMatch {
   date: string
   results: SeasonPlayerResult[]
 }
+
+export interface AuthCredentials {
+  username: string
+  password: string
+}
+
+export interface LoginResponse {
+  token: string
+  type: string
+  username: string
+}
+
+export interface AuthSession {
+  username: string
+  token: string
+}
