@@ -1,0 +1,175 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { ClubDto } from '../../../types'
+import { fetchClubsBySimilarName } from '../../../services/clubs'
+import { useAuth } from '../../../store/AuthContext'
+import { Button } from '../../ui/Button'
+import { ClubFormModal } from './ClubFormModal'
+import { ClubSearchForm } from './ClubSearchForm'
+import { ClubsPagination } from './ClubsPagination'
+import { ClubsResultsTable } from './ClubsResultsTable'
+import { DeleteClubConfirmModal } from './DeleteClubConfirmModal'
+
+const PAGE_SIZE = 10
+
+export function ClubsSearchPage() {
+  const { session } = useAuth()
+  const authToken = session?.token
+
+  const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null)
+  const [results, setResults] = useState<ClubDto[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const [formOpen, setFormOpen] = useState(false)
+  const [formMode, setFormMode] = useState<'add' | 'edit'>('add')
+  const [editingClub, setEditingClub] = useState<ClubDto | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<ClubDto | null>(null)
+
+  const pageCount = useMemo(
+    () => Math.max(1, Math.ceil(results.length / PAGE_SIZE)),
+    [results.length],
+  )
+
+  useEffect(() => {
+    if (page > pageCount) setPage(pageCount)
+  }, [page, pageCount])
+
+  const pageItems = useMemo(() => {
+    const p = Math.min(page, pageCount)
+    const start = (p - 1) * PAGE_SIZE
+    return results.slice(start, start + PAGE_SIZE)
+  }, [page, pageCount, results])
+
+  const refetch = useCallback(async () => {
+    if (lastSearchTerm === null || !authToken) return
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await fetchClubsBySimilarName(authToken, lastSearchTerm)
+      setResults(data)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Search failed')
+      setResults([])
+    } finally {
+      setLoading(false)
+    }
+  }, [lastSearchTerm, authToken])
+
+  async function runSearch(term: string) {
+    if (!term) {
+      setError('Enter a club name to search')
+      return
+    }
+    if (!authToken) {
+      setError('You must be signed in to search clubs.')
+      return
+    }
+    setLastSearchTerm(term)
+    setPage(1)
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await fetchClubsBySimilarName(authToken, term)
+      setResults(data)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Search failed')
+      setResults([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const hasSearched = lastSearchTerm !== null
+
+  return (
+    <div className="flex flex-col gap-6">
+      {!authToken ? (
+        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          No session token. Sign in again to use club search.
+        </p>
+      ) : null}
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          disabled={!authToken}
+          onClick={() => {
+            setFormMode('add')
+            setEditingClub(null)
+            setFormOpen(true)
+          }}
+        >
+          Add new club
+        </Button>
+      </div>
+
+      <section aria-labelledby="club-search-heading">
+        <h2 id="club-search-heading" className="mb-3 text-sm font-semibold text-gray-900">
+          Search
+        </h2>
+        <ClubSearchForm
+          onSearch={(t) => void runSearch(t)}
+          disabled={loading || !authToken}
+        />
+      </section>
+
+      {loading ? (
+        <p className="text-sm text-gray-600" role="status">
+          Loading…
+        </p>
+      ) : null}
+      {error ? (
+        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          {error}
+        </p>
+      ) : null}
+
+      {!hasSearched && !loading ? (
+        <p className="text-sm text-gray-600">Enter a name and search to see clubs.</p>
+      ) : null}
+
+      {hasSearched && !loading && results.length === 0 && !error ? (
+        <p className="text-sm text-gray-600">No clubs match this search.</p>
+      ) : null}
+
+      {results.length > 0 ? (
+        <>
+          <ClubsResultsTable
+            clubs={pageItems}
+            onEdit={(club) => {
+              setFormMode('edit')
+              setEditingClub(club)
+              setFormOpen(true)
+            }}
+            onDelete={setDeleteTarget}
+          />
+          <ClubsPagination
+            page={Math.min(page, pageCount)}
+            pageCount={pageCount}
+            onPageChange={setPage}
+          />
+        </>
+      ) : null}
+
+      <ClubFormModal
+        authToken={authToken ?? ''}
+        open={formOpen}
+        mode={formMode}
+        editingClub={formMode === 'edit' ? editingClub : null}
+        onOpenChange={(open) => {
+          setFormOpen(open)
+          if (!open) setEditingClub(null)
+        }}
+        onSaved={() => void refetch()}
+      />
+
+      <DeleteClubConfirmModal
+        authToken={authToken ?? ''}
+        club={deleteTarget}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        onDeleted={() => void refetch()}
+      />
+    </div>
+  )
+}

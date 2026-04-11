@@ -1,10 +1,14 @@
-import { apiBase } from '../lib/api'
+import { apiBase, bearerAuth } from '../lib/api'
 import { readApiErrorMessage } from '../lib/read-api-error'
 import type { SeasonPlayerDto } from '../types'
 
-export async function fetchSeasonPlayersByName(name: string): Promise<SeasonPlayerDto[]> {
+export async function fetchSeasonPlayersByName(
+  token: string,
+  name: string,
+): Promise<SeasonPlayerDto[]> {
   const res = await fetch(
-    `${apiBase}/api/v1/season_player/search_by_name/${encodeURIComponent(name)}`
+    `${apiBase}/api/v1/season_player/search_by_name/${encodeURIComponent(name)}`,
+    { headers: bearerAuth(token) },
   )
   if (!res.ok) {
     const detail = await readApiErrorMessage(res)
@@ -14,10 +18,12 @@ export async function fetchSeasonPlayersByName(name: string): Promise<SeasonPlay
 }
 
 export async function fetchSeasonPlayersByPracticionerId(
-  practicionerId: string
+  token: string,
+  practicionerId: string,
 ): Promise<SeasonPlayerDto[]> {
   const res = await fetch(
-    `${apiBase}/api/v1/season_player/find_by_practicioner/${encodeURIComponent(practicionerId)}`
+    `${apiBase}/api/v1/season_player/find_by_practicioner/${encodeURIComponent(practicionerId)}`,
+    { headers: bearerAuth(token) },
   )
   if (!res.ok) {
     const detail = await readApiErrorMessage(res)

@@ -123,3 +123,53 @@ The openapi.yaml spec has been updated and the related logic needs to be adapted
 
 ---
 
+### [FEAT-003] Add vertical menu in Dashboard page
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-002
+
+#### Goal
+Add a vertical menu in the Dashboard page to navigate to the different sections of the app.
+
+#### Acceptance Criteria
+- [x] The vertical menu is added to the Dashboard page
+- [x] The vertical menu is responsive and works on all screen sizes
+- [x] The vertical menu is styled using the Tailwind CSS classes
+
+#### Feature Details
+→ See [FEAT-003-DETAILS.md](./FEAT-003-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-004] Add club search page
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-003
+
+#### Goal
+Add a page to search for clubs by name. The page is accessible from the vertical menu with a new menu item `Clubs search`.
+The page should display a list of clubs that match the search. The list should be paginated and should have a form to search for clubs by name.
+The page should have a button to add a new club.
+The page should have a button to edit a club.
+The page should have a button to delete a club.
+
+The backend secures **all** `/api/v1/...` routes except **`POST /auth/register`** and **`POST /auth/login`**: club search/create/update/delete send **`Authorization: Bearer <token>`** from the signed-in session (see root **`AGENTS.md`** — *Backend API authentication*).
+
+#### Acceptance Criteria
+- [x] The club search page is added to the app
+- [x] The club search page is accessible from the vertical menu with a new menu item `Clubs search`
+- [x] The club search page has a form to search for clubs by name
+- [x] The club search page has a list of clubs that match the search
+- [x] The club search page has a pagination to navigate through the list of clubs
+- [x] The club search page has a button to add a new club
+- [x] The club search page has a button to edit a club
+- [x] The club search page has a button to delete a club
+- [x] Every club API call from this feature (`find_by_similar_name`, create, update, delete) sends **`Authorization: Bearer <token>`** using the session token; behaviour matches **`AGENTS.md`**
+
+#### Feature Details
+→ See [FEAT-004-DETAILS.md](./FEAT-004-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+

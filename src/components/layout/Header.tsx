@@ -17,16 +17,6 @@ export function Header() {
         <Link to="/" className="text-lg font-semibold text-gray-900">
           TT League
         </Link>
-        {isAuthenticated && (
-          <Link to="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">
-            Dashboard
-          </Link>
-        )}
-        {isAuthenticated && (
-          <Link to="/settings" className="text-sm text-gray-600 hover:text-gray-900">
-            Settings
-          </Link>
-        )}
         <div className="ml-auto">
           {isAuthenticated ? (
             <Button variant="ghost" onClick={handleLogout}>

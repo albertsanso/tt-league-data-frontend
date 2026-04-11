@@ -72,6 +72,12 @@ src/
 - All fetch/API calls live in `src/services/`.
 - Never call APIs directly inside components.
 
+### Backend API authentication
+- The app calls the API under **`/api/v1/...`** (relative URLs in dev so Vite’s proxy forwards to the backend). Do not embed `/api/v1` in `VITE_API_BASE_URL` (see `src/lib/api.ts`).
+- **Unauthenticated** requests (no `Authorization` header): only **`POST /api/v1/auth/register`** and **`POST /api/v1/auth/login`**—everything else on `/api/v1/**` is treated as **protected** by the backend and expects a bearer token.
+- **Protected** requests must send **`Authorization: Bearer <token>`** using the token from the signed-in session (`AuthSession.token`, exposed via `useAuth()` in the UI).
+- When you add or change service functions, attach that header for every protected endpoint; the UI living behind `ProtectedRoute` does **not** replace API-side auth.
+
 ---
 
 ## Agentic Task Workflows
