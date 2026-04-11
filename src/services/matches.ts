@@ -1,30 +1,21 @@
-import { apiBase, bearerAuth, jsonAuthHeaders } from '../lib/api'
-import { readApiErrorMessage } from '../lib/read-api-error'
+import { requestJson } from '../lib/rest-adapter'
 import type { EnrichedMatchDto, FindMatchesRequestBodyDto, MatchDto } from '../types'
 
 export async function fetchMatchById(token: string, id: string): Promise<MatchDto> {
-  const res = await fetch(`${apiBase}/api/v1/match/${encodeURIComponent(id)}`, {
-    headers: bearerAuth(token),
+  return requestJson<MatchDto>(`/api/v1/match/${encodeURIComponent(id)}`, {
+    token,
+    fallbackErrorMessage: 'Failed to fetch match',
   })
-  if (!res.ok) {
-    const detail = await readApiErrorMessage(res)
-    throw new Error(detail ?? 'Failed to fetch match')
-  }
-  return res.json() as Promise<MatchDto>
 }
 
 export async function findEnrichedMatches(
   token: string,
   body: FindMatchesRequestBodyDto,
 ): Promise<EnrichedMatchDto[]> {
-  const res = await fetch(`${apiBase}/api/v1/match/enriched/find_matches`, {
+  return requestJson<EnrichedMatchDto[]>('/api/v1/match/enriched/find_matches', {
     method: 'POST',
-    headers: jsonAuthHeaders(token),
-    body: JSON.stringify(body),
+    token,
+    jsonBody: body,
+    fallbackErrorMessage: 'Failed to find matches',
   })
-  if (!res.ok) {
-    const detail = await readApiErrorMessage(res)
-    throw new Error(detail ?? 'Failed to find matches')
-  }
-  return res.json() as Promise<EnrichedMatchDto[]>
 }

@@ -37,7 +37,7 @@ src/
 │   ├── layout/      # App shell: Header, Sidebar, Footer, PageWrapper
 │   └── features/    # Domain-specific components grouped by feature
 ├── hooks/           # Custom React hooks
-├── lib/             # Pure utilities: cn(), formatDate(), validators
+├── lib/             # Pure utilities, REST adapter (`rest-adapter.ts`), `api.ts`, `read-api-error.ts`
 ├── services/        # API calls and external integrations
 ├── store/           # Global state (Zustand / Context)
 ├── types/           # Shared TypeScript interfaces and enums
@@ -72,6 +72,11 @@ src/
 - All fetch/API calls live in `src/services/`.
 - Never call APIs directly inside components.
 
+### REST adapter (`src/lib/rest-adapter.ts`)
+- **Single HTTP layer:** `requestJson` and `requestVoid` wrap `fetch`, use `apiBase` from `src/lib/api.ts`, merge headers, and surface errors via `readApiErrorMessage` (with optional `fallbackErrorMessage`).
+- **Token:** Pass `token` for every **protected** `/api/v1/**` call. Omit `token` only for **`POST /api/v1/auth/register`** and **`POST /api/v1/auth/login`** (same rule as *Backend API authentication* below).
+- **Services stay thin:** `src/services/*.ts` should call the adapter only—no raw `fetch`, no duplicated error parsing.
+
 ### Backend API authentication
 - The app calls the API under **`/api/v1/...`** (relative URLs in dev so Vite’s proxy forwards to the backend). Do not embed `/api/v1` in `VITE_API_BASE_URL` (see `src/lib/api.ts`).
 - **Unauthenticated** requests (no `Authorization` header): only **`POST /api/v1/auth/register`** and **`POST /api/v1/auth/login`**—everything else on `/api/v1/**` is treated as **protected** by the backend and expects a bearer token.
@@ -98,6 +103,7 @@ src/
 
 ## What Agents Should NOT Do
 
+- Do not modify **`openapi.yaml`** (repository root). It is a **read-only** contract snapshot: paths, schemas, and examples must match what the backend team publishes. To align the app with API changes, replace the file with an export from the backend (or merge only via human-approved upstream updates)—never hand-edit or extend this file to invent endpoints. Update **`src/types/`** and **`src/services/`** to match the YAML you are given.
 - Do not install new dependencies without listing them here first.
 - Do not modify `tailwind.config.ts` tokens without a comment explaining why.
 - Do not introduce a new state management library.

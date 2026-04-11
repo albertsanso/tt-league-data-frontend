@@ -1,33 +1,22 @@
-import { apiBase, bearerAuth } from '../lib/api'
-import { readApiErrorMessage } from '../lib/read-api-error'
+import { requestJson } from '../lib/rest-adapter'
 import type { SeasonPlayerDto } from '../types'
 
 export async function fetchSeasonPlayersByName(
   token: string,
   name: string,
 ): Promise<SeasonPlayerDto[]> {
-  const res = await fetch(
-    `${apiBase}/api/v1/season_player/search_by_name/${encodeURIComponent(name)}`,
-    { headers: bearerAuth(token) },
+  return requestJson<SeasonPlayerDto[]>(
+    `/api/v1/season_player/search_by_name/${encodeURIComponent(name)}`,
+    { token, fallbackErrorMessage: 'Failed to fetch season players' },
   )
-  if (!res.ok) {
-    const detail = await readApiErrorMessage(res)
-    throw new Error(detail ?? 'Failed to fetch season players')
-  }
-  return res.json() as Promise<SeasonPlayerDto[]>
 }
 
 export async function fetchSeasonPlayersByPracticionerId(
   token: string,
   practicionerId: string,
 ): Promise<SeasonPlayerDto[]> {
-  const res = await fetch(
-    `${apiBase}/api/v1/season_player/find_by_practicioner/${encodeURIComponent(practicionerId)}`,
-    { headers: bearerAuth(token) },
+  return requestJson<SeasonPlayerDto[]>(
+    `/api/v1/season_player/find_by_practicioner/${encodeURIComponent(practicionerId)}`,
+    { token, fallbackErrorMessage: 'Failed to fetch season players' },
   )
-  if (!res.ok) {
-    const detail = await readApiErrorMessage(res)
-    throw new Error(detail ?? 'Failed to fetch season players')
-  }
-  return res.json() as Promise<SeasonPlayerDto[]>
 }

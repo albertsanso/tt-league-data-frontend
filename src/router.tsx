@@ -40,6 +40,13 @@ const router = createBrowserRouter([
                 path: 'clubs',
                 lazy: () => import('./pages/ClubsSearch').then((m) => ({ Component: m.ClubsSearch })),
               },
+              {
+                path: 'practicioners',
+                lazy: () =>
+                  import('./pages/PracticionersSearch').then((m) => ({
+                    Component: m.PracticionersSearch,
+                  })),
+              },
             ],
           },
         ],

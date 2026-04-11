@@ -64,9 +64,30 @@ Any open questions, design decisions, or links.
 
 ## Backlog
 
----
+
 
 ## Done
+
+---
+
+### [FEAT-006] Update rest adapter and related logic from openapi.yaml spec
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-005
+
+#### Goal
+Consolidate HTTP access into a documented **REST adapter** (central **`fetch`** + **`apiBase`** + Bearer + error handling), migrate **`src/services/*`** to use it, and align **`src/types`** with the **published** **`openapi.yaml`**. The YAML is **read-only** in this repo—replace it only from the backend export, then adapt code (see root **`AGENTS.md`**).
+
+#### Acceptance Criteria
+- [x] A single REST/HTTP adapter layer exists (see **`FEAT-006-DETAILS.md`**) and **`src/services/*`** use it without duplicating low-level **`fetch`** patterns
+- [x] Types and service calls match the current **`openapi.yaml`** snapshot after replacement from the backend
+- [x] Adapter covered by **Vitest** unit tests (mocked **`fetch`**) for success and error paths
+- [x] Root **`AGENTS.md`** documents the adapter (when to pass **`token`**, where HTTP lives)
+- [x] **`npm run type-check`** and **`npm run lint`** pass; manual smoke against the API succeeds for auth + at least one protected flow
+
+#### Feature Details
+→ See [FEAT-006-DETAILS.md](./FEAT-006-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
 
 ---
 
@@ -170,6 +191,33 @@ The backend secures **all** `/api/v1/...` routes except **`POST /auth/register`*
 
 #### Feature Details
 → See [FEAT-004-DETAILS.md](./FEAT-004-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-005] Add practicioners search page
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-003
+
+#### Goal
+Add a page to search for practicioners by name. The page is accessible from the vertical menu with a new menu item `Practicioners search`.
+
+**OpenAPI:** **`openapi.yaml`** includes **Practicioner API** paths (search, create, update, delete) aligned with the **Club** pattern; the backend must implement these routes for the UI to succeed at runtime. All **`/api/v1/...`** calls from this feature **except** register/login send **`Authorization: Bearer <token>`** (see **`docs/sdd/AGENTS.md`** and root **`AGENTS.md`**).
+
+#### Acceptance Criteria
+- [x] The practicioners search page is added to the app
+- [x] The practicioners search page is accessible from the vertical menu with a new menu item `Practicioners search`
+- [x] The practicioners search page has a form to search for practicioners by name
+- [x] The practicioners search page has a list of practicioners that match the search
+- [x] The practicioners search page has a pagination to navigate through the list of practicioners
+- [x] The practicioners search page has a button to add a new practicioner
+- [x] The practicioners search page has a button to edit a practicioner
+- [x] The practicioners search page has a button to delete a practicioner
+- [x] Every practicioner API call from this feature sends **`Authorization: Bearer <token>`** using the session token; behaviour matches **`AGENTS.md`**
+
+#### Feature Details
+→ See [FEAT-005-DETAILS.md](./FEAT-005-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
 
 ---
 
