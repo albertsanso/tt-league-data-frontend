@@ -1,8 +1,9 @@
 import { requestJson, requestVoid } from '../lib/rest-adapter'
-import type { AuthCredentials, LoginResponse, Users } from '../types'
+import type { AuthCredentials, LoginResponse, RegisterCredentials } from '../types'
 
-export async function register(credentials: AuthCredentials): Promise<Users> {
-  return requestJson<Users>('/api/v1/auth/register', {
+/** Register response schema in OpenAPI is unconstrained (`{}`); parse as unknown. */
+export async function register(credentials: RegisterCredentials): Promise<unknown> {
+  return requestJson<unknown>('/api/v1/auth/register', {
     method: 'POST',
     jsonBody: credentials,
     fallbackErrorMessage: 'Registration failed',

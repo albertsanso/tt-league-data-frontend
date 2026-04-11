@@ -1,10 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { PracticionerDto } from '../../../types'
 import { fetchPracticionersBySimilarName } from '../../../services/practicioners'
 import { useAuth } from '../../../store/AuthContext'
-import { Button } from '../../ui/Button'
-import { DeletePracticionerConfirmModal } from './DeletePracticionerConfirmModal'
-import { PracticionerFormModal } from './PracticionerFormModal'
 import { PracticionerSearchForm } from './PracticionerSearchForm'
 import { PracticionersPagination } from './PracticionersPagination'
 import { PracticionersResultsTable } from './PracticionersResultsTable'
@@ -20,10 +17,6 @@ export function PracticionersSearchPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
-  const [formOpen, setFormOpen] = useState(false)
-  const [formMode, setFormMode] = useState<'add' | 'edit'>('add')
-  const [editing, setEditing] = useState<PracticionerDto | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<PracticionerDto | null>(null)
 
   const pageCount = useMemo(
     () => Math.max(1, Math.ceil(results.length / PAGE_SIZE)),
@@ -39,21 +32,6 @@ export function PracticionersSearchPage() {
     const start = (p - 1) * PAGE_SIZE
     return results.slice(start, start + PAGE_SIZE)
   }, [page, pageCount, results])
-
-  const refetch = useCallback(async () => {
-    if (lastSearchTerm === null || !authToken) return
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await fetchPracticionersBySimilarName(authToken, lastSearchTerm)
-      setResults(data)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Search failed')
-      setResults([])
-    } finally {
-      setLoading(false)
-    }
-  }, [lastSearchTerm, authToken])
 
   async function runSearch(term: string) {
     if (!term) {
@@ -87,20 +65,12 @@ export function PracticionersSearchPage() {
         <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
           No session token. Sign in again to use practicioners search.
         </p>
-      ) : null}
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          disabled={!authToken}
-          onClick={() => {
-            setFormMode('add')
-            setEditing(null)
-            setFormOpen(true)
-          }}
-        >
-          Add new practicioner
-        </Button>
-      </div>
+      ) : (
+        <p className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+          The published API only supports search. Add, edit, and delete practicioners require endpoints not yet
+          included in <code className="rounded bg-white px-1">openapi.yaml</code>.
+        </p>
+      )}
 
       <section aria-labelledby="practicioner-search-heading">
         <h2 id="practicioner-search-heading" className="mb-3 text-sm font-semibold text-gray-900">
@@ -133,15 +103,7 @@ export function PracticionersSearchPage() {
 
       {results.length > 0 ? (
         <>
-          <PracticionersResultsTable
-            practicioners={pageItems}
-            onEdit={(p) => {
-              setFormMode('edit')
-              setEditing(p)
-              setFormOpen(true)
-            }}
-            onDelete={setDeleteTarget}
-          />
+          <PracticionersResultsTable practicioners={pageItems} />
           <PracticionersPagination
             page={Math.min(page, pageCount)}
             pageCount={pageCount}
@@ -149,27 +111,6 @@ export function PracticionersSearchPage() {
           />
         </>
       ) : null}
-
-      <PracticionerFormModal
-        authToken={authToken ?? ''}
-        open={formOpen}
-        mode={formMode}
-        editing={formMode === 'edit' ? editing : null}
-        onOpenChange={(open) => {
-          setFormOpen(open)
-          if (!open) setEditing(null)
-        }}
-        onSaved={() => void refetch()}
-      />
-
-      <DeletePracticionerConfirmModal
-        authToken={authToken ?? ''}
-        practicioner={deleteTarget}
-        onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null)
-        }}
-        onDeleted={() => void refetch()}
-      />
     </div>
   )
 }

@@ -20,6 +20,8 @@ tags:
   description: Endpoints for managing club members in the table tennis league
 - name: Match API
   description: Endpoints for managing matches in the table tennis league
+- name: Practicioner API
+  description: ''
 - name: Season Player API
   description: Endpoints for managing season players in the table tennis league
 - name: Season Player Result API
@@ -368,6 +370,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: Find matches enriched with season player results by criteria
+  /practicioner/find_by_similar_name:
+    get:
+      summary: Find practicioners by similar name
+      tags:
+      - Practicioner API
+      parameters:
+      - name: name
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PracticionerDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Search practicioners by fullName fragment (case-insensitive partial
+        match)
   /season_player:
     post:
       summary: Create season player

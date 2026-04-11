@@ -9,6 +9,7 @@ export function Register() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -18,7 +19,7 @@ export function Register() {
     setError(null)
     setLoading(true)
     try {
-      await register({ username, password })
+      await register({ username, email, password })
       await login({ username, password })
       navigate('/dashboard')
     } catch {
@@ -41,6 +42,15 @@ export function Register() {
             onChange={(e) => setUsername(e.target.value)}
             required
             autoComplete="username"
+          />
+          <Input
+            id="email"
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
           />
           <Input
             id="password"
