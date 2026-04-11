@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { fetchMatchById } from '../services/matches'
-import type { PlayersSingleMatch } from '../types'
+import type { MatchDto } from '../types'
 
 export function useMatch(id: string) {
-  const [match, setMatch] = useState<PlayersSingleMatch | null>(null)
+  const [match, setMatch] = useState<MatchDto | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
