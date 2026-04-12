@@ -238,6 +238,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: Create a new club member from ClubMemberDto
+    put:
+      summary: Modify club member
+      tags:
+      - Club Member API
+      parameters: []
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubMemberDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Modify an existing club member using ClubMemberDto
   /club_member/find_by_club_id/{clubId}:
     get:
       summary: Find club members by club id
@@ -322,6 +341,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: Returns list of club members for the practicioner
+  /club_member/{id}:
+    get:
+      summary: Get club member by id
+      tags:
+      - Club Member API
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubMemberDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Returns a club member by UUID
+    delete:
+      summary: Delete club member
+      tags:
+      - Club Member API
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Operation successful
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '204':
+          description: Deleted (no content)
+      description: Delete a club member by UUID
   /match/{id}:
     get:
       summary: Get match by id
@@ -348,6 +416,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: Return a simple match DTO by id
+    delete:
+      summary: Delete match
+      tags:
+      - Match API
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Operation successful
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '204':
+          description: Deleted (no content)
+      description: Delete a match by UUID
   /match/enriched/find_matches:
     post:
       summary: Find enriched matches
@@ -370,6 +461,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: Find matches enriched with season player results by criteria
+  /match:
+    put:
+      summary: Modify match
+      tags:
+      - Match API
+      parameters: []
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrichedMatchDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Modify an existing match using EnrichedMatchDto
   /practicioner/find_by_similar_name:
     get:
       summary: Find practicioners by similar name
@@ -418,6 +529,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: Create a season player from SeasonPlayerDto
+    put:
+      summary: Modify season player
+      tags:
+      - Season Player API
+      parameters: []
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonPlayerDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Modify a season player using SeasonPlayerDto
   /season_player/{id}:
     get:
       summary: Get season player by id
@@ -573,6 +703,94 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: Return season players for a practicioner
+  /player_result:
+    post:
+      summary: Create season player result
+      tags:
+      - Season Player Result API
+      parameters: []
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonPlayerResultDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Create a SeasonPlayerResult from DTO
+    put:
+      summary: Modify season player result
+      tags:
+      - Season Player Result API
+      parameters: []
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonPlayerResultDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Modify a season player result using SeasonPlayerResultDto
+  /player_result/{id}:
+    get:
+      summary: Get season player result by id
+      tags:
+      - Season Player Result API
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonPlayerResultDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: Returns a season player result by UUID
+    delete:
+      summary: Delete season player result
+      tags:
+      - Season Player Result API
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Operation successful
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '204':
+          description: Deleted (no content)
+      description: Delete a season player result by UUID
 components:
   schemas:
     LoginRequest:
@@ -878,6 +1096,9 @@ components:
     SeasonPlayerResultDto:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
         competitionInfo:
           $ref: '#/components/schemas/CompetitionInfoDto'
         seasonPlayer:
@@ -895,6 +1116,7 @@ components:
         matchPlayerLetter:
           type: string
       required:
+      - id
       - competitionInfo
       - seasonPlayer
       - matchDay
