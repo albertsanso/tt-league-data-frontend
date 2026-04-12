@@ -60,58 +60,48 @@ Any open questions, design decisions, or links.
 
 ## In Progress
 
-
-
-
 ## Backlog
 
-### [FEAT-00X] Add Matches search page. The page is accessible from the vertical menu with a new menu item `Matches search`.
-- **Status:** idea
+---
+
+## Done
+
+---
+
+### [FEAT-009] Add Matches search page. The page is accessible from the vertical menu with a new menu item `Matches search`.
+- **Status:** done
 - **Priority:** high
 - **Effort:** medium
 - **Depends on:** -
 
 #### Goal
-Add a page to search for matches by name. The page should display a list of matches that match the search.
-- Include `schema.graphqls` in the project to use the graphql queries.
-- Use `findMatchesBySeasonAndCompetitionAndMatchDayAndPracticionerName` in `schema.graphqls` to search for matches.
-- The list should be paginated and should have a form to search for matches by name.
-- The match item displayed is a card with the following information:
-- - match date,
-- - home team,
-- - home player letter,
-- - home player name,
-- - home player score,
-- - away team,
-- - away player letter,
-- - away player name,
-- - away player score.
-- The form to search for matches by name should have the following fields (none are required):
-- - match date (date picker),
-- - home team (selector with options from the clubs search page),
-- - home player letter (text input from [A,B,c,X,Y,Z] with validation to only allow one of the letters),
-- - home player name (selector with options from the practicioners search page),
-- - home player score (text input),
-- - away team (selector with options from the clubs search page),
-- - away player letter (text input from [A,B,c,X,Y,Z] with validation to only allow one of the letters),
-- - away player name (selector with options from the practicioners search page),
-- - away player score (text input).
-- The form should be validated and the matches should be searched when the form is submitted.
+Add a page to search for matches by name. The page should display a list of matches that match the search. The matches are retrieved from the backend using the GraphQL adapter.
+
+The list should be paginated and should have a form to search for matches by name.
+- The page should have a button to clear the search filters.
+- The pagination window size is 10 items per page.
+
+The match item displayed is a card with the following information:
+- season, matchDayNumber, home player letter, home player name, home player score, away player letter, away player name, away player score.
+
+The form to search for matches by name should have the following fields:
+ - **season**: (selector with options from the seasons search page: ["2018-2019", "2019-2020", "2020-2021", "2021-2022", "2022-2023", "2023-2024", "2024-2025"])
+ - **competition scope**: (selector with options from the competitions search page: ["-All-", "provincial", "nacional"]. If "-All-" is selected, the api will omit this property from the query.)
+ - **competition scope tag**: (selector with options from the competitions search page: ["-All-", "esp", "bcn"]. If "-All-" is selected, the api will omit this property from the query.)
+ - **competition type**: (selector with options from the competitions search page: ["-All-", "senior", "SENIOR", "VETERANS"]. If "-All-" is selected, the api will omit this property from the query.)
+ - **match day number**: (text input. If not provided, the api will omit this property from the query.)
+ - **practitioner name**: (text input, case insensitive partial match)
+ - **competition category**: (selector with options from the competitions search page: ["-All-", "divisio-honor", "primera-nacional", "segona-nacional", "super-divisio", "BCN_SENIOR_PROVINCIAL_1A", "BCN_SENIOR_PROVINCIAL_2A_A", "BCN_SENIOR_PROVINCIAL_2A_B", "BCN_SENIOR_PROVINCIAL_3A_A", "BCN_SENIOR_PROVINCIAL_3A_B", "BCN_SENIOR_PROVINCIAL_4A", "BCN_VETERANS_1A", "BCN_VETERANS_2A_A", "BCN_VETERANS_2A_B", "BCN_VETERANS_3A_A", "BCN_VETERANS_3A_B", "BCN_VETERANS_4A_A", "BCN_VETERANS_4A_B"]). If "-All-" is selected, the api will omit this property from the query.)
 
 #### Acceptance Criteria
-- [ ] The matches search page is added to the app and is accessible from the vertical menu with a new menu item `Matches search` and it displays a list of matches that match the search. The match item displayed is a card with the following information: home team, home player letter, home player name, home player score, away team, away player letter, away player name, away player score, match date.
-- [ ] The matches search page has a form to search for matches by nameSeason, practicioner name, club name, competition type, competition category, competition scope, competition scope tag, competition group, competition gender, match day number, match day, match game points, match games won, match player letter.
-- [ ] The matches search page has a pagination to navigate through the list of matches.
-- [ ] The matches search page has a button to add a new match that opens a modal with a form to add a new match. The form should have the following fields: home team, home player letter, home player name, home player score, away team, away player letter, away player name, away player score, match date.
-- [ ] The matches search page has a button to edit a match that opens a modal with a form to edit the match. The form should have the following fields: home team, home player letter, home player name, home player score, away team, away player letter, away player name, away player score, match date.
-- [ ] The matches search page has a button to delete a match that opens a modal with a confirmation to delete the match.
+- [x] The matches search page is added to the app and is accessible from the vertical menu with a new menu item `Matches search` and it displays a list of matches that match the search. The match item displayed is a card with the following information: season, matchDayNumber, home player letter, home player name, home player score, away player letter, away player name, away player score.
+- [x] The matches search page has a form to search for matches by name. The form should have the following fields: season, competition scope, competition scope tag, competition type, match day number, practitioner name fragment, competition category.
+- [x] The matches search page has a pagination to navigate through the list of matches.
 
 #### Feature Details
-→ See [FEAT-00X-DETAILS.md](./FEAT-00X-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+→ See [FEAT-009-DETAILS.md](./FEAT-009-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
 
 ---
-
-## Done
 
 ### [FEAT-008] Refactor /src/lib adapters and add support for having both Rest and GraphQL adapters.
 - **Status:** done

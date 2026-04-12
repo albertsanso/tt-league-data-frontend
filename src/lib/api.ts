@@ -2,7 +2,7 @@
 // In production: set VITE_API_BASE_URL to the API host (e.g. https://api.example.com) — no trailing slash.
 export const apiBase = import.meta.env.VITE_API_BASE_URL ?? ''
 
-const DEFAULT_GRAPHQL_PATH = '/api/v1/graphql'
+const DEFAULT_GRAPHQL_PATH = '/graphql'
 
 /**
  * Full URL for GraphQL POST. Unset `VITE_GRAPHQL_URL` uses `/api/v1/graphql` (same dev proxy as REST).

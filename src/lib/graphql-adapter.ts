@@ -37,11 +37,23 @@ function restStyleMessageFromBody(body: unknown): string | undefined {
 }
 
 /**
+ * Collapses whitespace in the operation string so the JSON request body does not contain
+ * literal newline characters from multi-line template literals. Does not parse string literals;
+ * avoid `#` line comments inside queries (use separate lines only if you strip them yourself).
+ */
+function compactGraphqlQueryForTransport(query: string): string {
+  return query.replace(/\s+/g, ' ').trim()
+}
+
+/**
  * Executes a GraphQL operation (query or mutation). Returns the `data` object from the response.
  * Throws if the response contains a non-empty `errors` array or HTTP status is not OK.
+ * The `query` string is compacted (whitespace → single spaces) before JSON serialization so the
+ * request body does not contain literal newlines from multi-line source literals.
  */
 export async function requestGraphql<T>(init: GraphqlRequestInit): Promise<T> {
   const { query, variables, token, fallbackErrorMessage } = init
+  const queryForBody = compactGraphqlQueryForTransport(query)
 
   const headers: Record<string, string> = token
     ? jsonAuthHeaders(token)

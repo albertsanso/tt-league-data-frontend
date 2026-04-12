@@ -1,4 +1,6 @@
 import { requestGraphql } from '../../lib/graphql-adapter'
+import type { MatchSearchFilters } from '../../lib/match-search-filters'
+import { MATCH_SEARCH_ALL } from '../../lib/match-search-filters'
 import type { GraphqlCompetitionInput, GraphqlMatch } from '../../types'
 
 const FIND_MATCH_BY_ID = `
@@ -50,6 +52,7 @@ const FIND_MATCHES_BY_SEARCH = `
     ) {
       id
       season
+      matchDayNumber
       matchDateTime
       localPlayerName
       localPlayerLetter
@@ -73,6 +76,7 @@ export type GraphqlMatchSearchRow = Pick<
   GraphqlMatch,
   | 'id'
   | 'season'
+  | 'matchDayNumber'
   | 'matchDateTime'
   | 'localPlayerName'
   | 'localPlayerLetter'
@@ -81,6 +85,42 @@ export type GraphqlMatchSearchRow = Pick<
   | 'visitorPlayerLetter'
   | 'visitorPlayerScore'
 >
+
+/**
+ * Maps UI filters to GraphQL variables. `season` and `practitionerName` are `String!` in
+ * `schema.graphqls`; use empty string when the UI means “any” (backend treats as wildcard).
+ */
+export function matchSearchFiltersToGraphqlVariables(
+  filters: MatchSearchFilters,
+): FindMatchesGraphqlVariables {
+  const competitionInfo: GraphqlCompetitionInput = {}
+  if (filters.competitionScope !== MATCH_SEARCH_ALL) {
+    competitionInfo.competitionScope = filters.competitionScope
+  }
+  if (filters.competitionScopeTag !== MATCH_SEARCH_ALL) {
+    competitionInfo.competitionScopeTag = filters.competitionScopeTag
+  }
+  if (filters.competitionType !== MATCH_SEARCH_ALL) {
+    competitionInfo.competitionType = filters.competitionType
+  }
+  if (filters.competitionCategory !== MATCH_SEARCH_ALL) {
+    competitionInfo.competitionCategory = filters.competitionCategory
+  }
+
+  const dayTrim = filters.matchDayNumber.trim()
+  let matchDayNumber: number | undefined
+  if (dayTrim !== '') {
+    const n = Number.parseInt(dayTrim, 10)
+    if (!Number.isNaN(n)) matchDayNumber = n
+  }
+
+  return {
+    season: filters.season === MATCH_SEARCH_ALL ? '' : filters.season,
+    competitionInfo,
+    matchDayNumber,
+    practitionerName: filters.practitionerName.trim(),
+  }
+}
 
 export async function findMatchesBySeasonAndCompetitionGraphql(
   token: string,

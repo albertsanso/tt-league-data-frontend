@@ -1,9 +1,10 @@
 import { PageWrapper } from '../components/layout/PageWrapper'
+import { MatchesSearchPage } from '../components/features/matches/MatchesSearchPage'
 
 export function Matches() {
   return (
-    <PageWrapper title="Matches">
-      <p className="text-gray-600">Match list coming soon.</p>
+    <PageWrapper title="Matches search">
+      <MatchesSearchPage />
     </PageWrapper>
   )
 }

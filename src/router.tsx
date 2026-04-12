@@ -47,6 +47,10 @@ const router = createBrowserRouter([
                     Component: m.PracticionersSearch,
                   })),
               },
+              {
+                path: 'matches',
+                lazy: () => import('./pages/Matches').then((m) => ({ Component: m.Matches })),
+              },
             ],
           },
         ],

@@ -44,6 +44,26 @@ describe('graphql-adapter', () => {
     expect(init.headers).not.toHaveProperty('Authorization')
   })
 
+  it('requestGraphql compacts multi-line queries so the JSON body has no newlines in query', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { ok: true } }), { status: 200 }),
+    )
+
+    await requestGraphql<{ ok: boolean }>({
+      query: `query {
+        ok
+      }`,
+      token: 't',
+    })
+
+    const [, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit]
+    const raw = init.body as string
+    expect(raw).not.toMatch(/\\n/)
+    expect(raw).not.toMatch(/\n/)
+    const parsed = JSON.parse(raw) as { query: string }
+    expect(parsed.query).toBe('query { ok }')
+  })
+
   it('requestGraphql sends variables in the body', async () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify({ data: { n: 2 } }), { status: 200 }),
