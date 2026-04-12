@@ -95,6 +95,37 @@ export interface EnrichedMatchDto {
   uniqueRowMatchId: string
 }
 
+/** `Match` from root `schema.graphqls` (GraphQL); not the same shape as REST `MatchDto`. */
+export interface GraphqlMatch {
+  id: string
+  season: string
+  competitionType: string
+  competitionCategory: string
+  competitionScope: string
+  competitionScopeTag: string
+  competitionGroup: string
+  competitionGender: string
+  matchDayNumber: string
+  uniqueRowMatchId: string
+  localPlayerName: string
+  localPlayerLetter: string
+  localPlayerScore: string
+  visitorPlayerName: string
+  visitorPlayerLetter: string
+  visitorPlayerScore: string
+  matchDateTime: string
+}
+
+/** `CompetitionInput` in `schema.graphqls` for GraphQL variables. */
+export interface GraphqlCompetitionInput {
+  competitionType?: string
+  competitionCategory?: string
+  competitionScope?: string
+  competitionScopeTag?: string
+  competitionGroup?: string
+  competitionGender?: string
+}
+
 export interface SeasonPlayerResultDto {
   competitionInfo: CompetitionInfoDto
   seasonPlayer: SeasonPlayerDto

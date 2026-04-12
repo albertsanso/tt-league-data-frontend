@@ -14,6 +14,11 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      // If `VITE_GRAPHQL_URL` is `/graphql` (root-mounted GraphQL server)
+      '/graphql': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })

@@ -79,7 +79,10 @@ The file has three feature sections (in this **top-to-bottom order**):
 
 When you change a feature’s status, **move the entire block** (heading, metadata, goal, acceptance criteria, details link, and any subsections) to the correct section. Keep sections ordered: **In Progress** first, then **Backlog**, then **Done**.
 
-**Ordering within a section:** No strict rule unless the human requests it; default to chronological (newest backlog items near the top or bottom consistently with surrounding entries—match the prevailing pattern in the file).
+**Ordering within a section:**
+
+- **`## Done`:** Sort feature blocks by **`FEAT-NNN` id in descending alphabetical order** (lexicographic descending on the full id string, e.g. `FEAT-008` above `FEAT-007`, … down to `FEAT-001`). When moving a feature to **Done**, insert it in this order (do not append only at the top or bottom unless that happens to match the sort).
+- **In Progress** and **Backlog:** No strict rule unless the human requests it; default to chronological (newest items near the top or bottom consistently with surrounding entries—match the prevailing pattern in the file).
 
 ---
 
@@ -113,7 +116,7 @@ When you change a feature’s status, **move the entire block** (heading, metada
 ### 5. Shipped (`done`)
 
 1. Set status to `done`.
-2. Move the block to **Done**.
+2. Move the block to **Done**, placing it in **descending `FEAT-NNN` order** (see [Section placement](#section-placement-in-featuresmd) — **Done** sorting rule).
 3. Align acceptance checkboxes in `FEATURES.md` with reality (check completed items).
 4. Add a short **Notes** or “Shipped” line in details if useful; avoid large rewrites unless requested.
 
@@ -168,6 +171,7 @@ When you change a feature’s status, **move the entire block** (heading, metada
 
 - [ ] Status is one of the six allowed values.
 - [ ] Feature block sits under **In Progress**, **Backlog**, or **Done** according to the table above.
+- [ ] **`## Done`** entries are ordered by **`FEAT-NNN` descending** (alphabetical descending on the id).
 - [ ] `FEAT-NNN` in the heading matches `FEAT-NNN-DETAILS.md`.
 - [ ] Details file has a **Build Plan** before or when status is `planned` or later.
 - [ ] Blockers documented in details **Notes** when `blocked`.

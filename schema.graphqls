@@ -1,0 +1,91 @@
+type Query {
+    findClubById(id: ID!): Club
+    findClubByName(name: String!): [Club!]!
+    listAllClubs: [Club!]!
+
+    findPracticionerById(id: ID!): Practicioner
+    findPracticionerByName(name: String!): [Practicioner!]!
+    listAllPracticioners: [Practicioner!]!
+
+    findClubMemberById(id: ID!): ClubMember
+    listAllClubMembers: [ClubMember!]!
+
+    findSeasonPlayerById(id: ID!): SeasonPlayer
+    findSeasonPlayerByYearRange(yearRange: String!): [SeasonPlayer!]!
+    listAllSeasonPlayers: [SeasonPlayer!]!
+
+    findMatchById(id: ID!): Match
+    findMatchesByTeam(teamName: String!): [Match!]!
+    findMatchesBySeasonAndCompetitionAndMatchDayAndPracticionerName(
+        season: String!
+        competitionInfo: CompetitionInput!
+        matchDayNumber: Int
+        practitionerName: String!
+    ): [Match!]!
+    listAllMatches: [Match!]!
+}
+
+type Club {
+    id: ID!
+    name: String!
+    yearRanges: [String!]!
+    members: [ClubMember!]!
+}
+
+type Practicioner {
+    id: ID!
+    firstName: String!
+    secondName: String!
+    fullName: String!
+    birthDate: String!
+    memberships: [ClubMember!]!
+}
+
+type ClubMember {
+    id: ID!
+    club: Club!
+    practicioner: Practicioner!
+    yearRanges: [String!]!
+    seasonPlayers: [SeasonPlayer!]!
+}
+
+type License {
+    id: String!
+    tag: String!
+}
+
+type SeasonPlayer {
+    id: ID!
+    clubMember: ClubMember!
+    license: License!
+    yearRange: String!
+}
+
+type Match {
+    id: ID!
+    season: String!
+    competitionType: String!
+    competitionCategory: String!
+    competitionScope: String!
+    competitionScopeTag: String!
+    competitionGroup: String!
+    competitionGender: String!
+    matchDayNumber: String!
+    uniqueRowMatchId: String!
+    localPlayerName: String!
+    localPlayerLetter: String!
+    localPlayerScore: String!
+    visitorPlayerName: String!
+    visitorPlayerLetter: String!
+    visitorPlayerScore: String!
+    matchDateTime: String!
+}
+
+input CompetitionInput {
+    competitionType: String
+    competitionCategory: String
+    competitionScope: String
+    competitionScopeTag: String
+    competitionGroup: String
+    competitionGender: String
+}

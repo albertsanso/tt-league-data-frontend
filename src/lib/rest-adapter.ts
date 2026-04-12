@@ -1,7 +1,7 @@
 /**
- * Central HTTP layer for `/api/v1/...`: `apiBase`, JSON bodies, optional Bearer auth,
- * and `ErrorResponse`-aware failures. Domain modules in `src/services/` call these helpers;
- * do not use raw `fetch` in services (see `AGENTS.md` — REST adapter).
+ * Central HTTP layer for OpenAPI REST (`/api/v1/...`): `apiBase`, JSON bodies, optional Bearer auth,
+ * and `ErrorResponse`-aware failures. GraphQL uses `graphql-adapter.ts`. Domain modules in
+ * `src/services/` call these helpers; do not use raw `fetch` in components (see `AGENTS.md`).
  */
 import { apiBase, bearerAuth, jsonAuthHeaders } from './api'
 import { readApiErrorMessage } from './read-api-error'

@@ -37,7 +37,7 @@ src/
 │   ├── layout/      # App shell: Header, Sidebar, Footer, PageWrapper
 │   └── features/    # Domain-specific components grouped by feature
 ├── hooks/           # Custom React hooks
-├── lib/             # Pure utilities, REST adapter (`rest-adapter.ts`), `api.ts`, `read-api-error.ts`
+├── lib/             # Pure utilities, REST + GraphQL adapters, `api.ts`, `read-api-error.ts`
 ├── services/        # API calls and external integrations
 ├── store/           # Global state (Zustand / Context)
 ├── types/           # Shared TypeScript interfaces and enums
@@ -76,6 +76,11 @@ src/
 - **Single HTTP layer:** `requestJson` and `requestVoid` wrap `fetch`, use `apiBase` from `src/lib/api.ts`, merge headers, and surface errors via `readApiErrorMessage` (with optional `fallbackErrorMessage`).
 - **Token:** Pass `token` for every **protected** `/api/v1/**` call. Omit `token` only for **`POST /api/v1/auth/register`** and **`POST /api/v1/auth/login`** (same rule as *Backend API authentication* below).
 - **Services stay thin:** `src/services/*.ts` should call the adapter only—no raw `fetch`, no duplicated error parsing.
+
+### GraphQL adapter (`src/lib/graphql-adapter.ts`)
+- **`requestGraphql<T>`** POSTs to the URL from `graphqlHttpUrl()` in `src/lib/api.ts` (default **`/api/v1/graphql`**; override with **`VITE_GRAPHQL_URL`** — path or absolute URL, see `.env.example`).
+- **Token:** Pass `token` for protected operations the same way as REST; omit only if the backend allows the operation anonymously.
+- **Services:** Put GraphQL calls in **`src/services/graphql/`** (or other `src/services/*` modules), not in components.
 
 ### Backend API authentication
 - The app calls the API under **`/api/v1/...`** (relative URLs in dev so Vite’s proxy forwards to the backend). Do not embed `/api/v1` in `VITE_API_BASE_URL` (see `src/lib/api.ts`).
