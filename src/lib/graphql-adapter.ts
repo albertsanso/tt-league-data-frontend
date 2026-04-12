@@ -63,7 +63,7 @@ export async function requestGraphql<T>(init: GraphqlRequestInit): Promise<T> {
   const res = await fetch(url, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ query, variables }),
+    body: JSON.stringify({ query: queryForBody, variables }),
   })
 
   const text = await res.text()

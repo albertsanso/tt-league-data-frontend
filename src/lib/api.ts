@@ -2,11 +2,13 @@
 // In production: set VITE_API_BASE_URL to the API host (e.g. https://api.example.com) — no trailing slash.
 export const apiBase = import.meta.env.VITE_API_BASE_URL ?? ''
 
+/** Default GraphQL HTTP path — not under `/api/v1` (see `docs/sdd/AGENTS.md`). */
 const DEFAULT_GRAPHQL_PATH = '/graphql'
 
 /**
- * Full URL for GraphQL POST. Unset `VITE_GRAPHQL_URL` uses `/api/v1/graphql` (same dev proxy as REST).
- * Set to an absolute URL in production, or a path such as `/graphql` if the server mounts it at root.
+ * Full URL for GraphQL POST. When `VITE_GRAPHQL_URL` is unset, uses **`/graphql`** in dev and prod
+ * (relative to `VITE_API_BASE_URL` when set, else same-origin). Override with `VITE_GRAPHQL_URL` as a
+ * path (must start with `/`) or an absolute `http(s)` URL for non-standard backends.
  */
 export function graphqlHttpUrl(): string {
   const raw = (import.meta.env.VITE_GRAPHQL_URL as string | undefined)?.trim()

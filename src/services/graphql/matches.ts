@@ -122,6 +122,18 @@ export function matchSearchFiltersToGraphqlVariables(
   }
 }
 
+/** Variables for match search scoped to one season and practitioner name (wildcard competition). */
+export function findMatchesVariablesForPractitionerInSeason(
+  fullName: string,
+  season: string,
+): FindMatchesGraphqlVariables {
+  return {
+    season,
+    competitionInfo: {},
+    practitionerName: fullName.trim(),
+  }
+}
+
 export async function findMatchesBySeasonAndCompetitionGraphql(
   token: string,
   variables: FindMatchesGraphqlVariables,

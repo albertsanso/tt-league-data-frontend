@@ -78,7 +78,7 @@ src/
 - **Services stay thin:** `src/services/*.ts` should call the adapter only—no raw `fetch`, no duplicated error parsing.
 
 ### GraphQL adapter (`src/lib/graphql-adapter.ts`)
-- **`requestGraphql<T>`** POSTs to the URL from `graphqlHttpUrl()` in `src/lib/api.ts` (default **`/graphql`**; override with **`VITE_GRAPHQL_URL`** — path or absolute URL, see `.env.example`).
+- **`requestGraphql<T>`** POSTs to the URL from `graphqlHttpUrl()` in `src/lib/api.ts`. **Default path is always `/graphql`** (dev and prod) — GraphQL is **not** under `/api/v1`. Override only with **`VITE_GRAPHQL_URL`** (path starting with `/` or absolute `http(s)` URL). See **`docs/sdd/AGENTS.md`** (*GraphQL HTTP path*).
 - **Token:** Pass `token` for protected operations the same way as REST; omit only if the backend allows the operation anonymously.
 - **Services:** Put GraphQL calls in **`src/services/graphql/`** (or other `src/services/*` modules), not in components.
 
@@ -122,6 +122,8 @@ src/
 
 Variables must be prefixed with `VITE_` to be accessible in the browser.
 Never commit `.env`. Use `.env.example` as the template.
+
+- **`VITE_GRAPHQL_URL`:** Optional. Unset means GraphQL POSTs to **`/graphql`** (see **`docs/sdd/AGENTS.md`** — *GraphQL HTTP path*). Set a path (`/…`) or absolute URL only if the backend differs.
 
 ---
 

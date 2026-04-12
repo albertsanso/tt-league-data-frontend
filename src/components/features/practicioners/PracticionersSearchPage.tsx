@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { PracticionerDto } from '../../../types'
 import { fetchPracticionersBySimilarName } from '../../../services/practicioners'
 import { useAuth } from '../../../store/AuthContext'
+import { PracticionerDetailsPanel } from './PracticionerDetailsPanel'
 import { PracticionerSearchForm } from './PracticionerSearchForm'
 import { PracticionersPagination } from './PracticionersPagination'
 import { PracticionersResultsTable } from './PracticionersResultsTable'
@@ -17,6 +18,8 @@ export function PracticionersSearchPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
+  /** Cleared on each new search; also cleared if the selected id disappears from `results`. */
+  const [selectedPracticioner, setSelectedPracticioner] = useState<PracticionerDto | null>(null)
 
   const pageCount = useMemo(
     () => Math.max(1, Math.ceil(results.length / PAGE_SIZE)),
@@ -33,6 +36,13 @@ export function PracticionersSearchPage() {
     return results.slice(start, start + PAGE_SIZE)
   }, [page, pageCount, results])
 
+  useEffect(() => {
+    if (!selectedPracticioner) return
+    if (!results.some((r) => r.id === selectedPracticioner.id)) {
+      setSelectedPracticioner(null)
+    }
+  }, [results, selectedPracticioner])
+
   async function runSearch(term: string) {
     if (!term) {
       setError('Enter a name to search')
@@ -42,6 +52,7 @@ export function PracticionersSearchPage() {
       setError('You must be signed in to search practicioners.')
       return
     }
+    setSelectedPracticioner(null)
     setLastSearchTerm(term)
     setPage(1)
     setLoading(true)
@@ -103,12 +114,23 @@ export function PracticionersSearchPage() {
 
       {results.length > 0 ? (
         <>
-          <PracticionersResultsTable practicioners={pageItems} />
+          <PracticionersResultsTable
+            practicioners={pageItems}
+            selectedId={selectedPracticioner?.id ?? null}
+            onSelect={setSelectedPracticioner}
+          />
           <PracticionersPagination
             page={Math.min(page, pageCount)}
             pageCount={pageCount}
             onPageChange={setPage}
           />
+          {selectedPracticioner && authToken ? (
+            <PracticionerDetailsPanel
+              practicioner={selectedPracticioner}
+              authToken={authToken}
+              onCloseSelection={() => setSelectedPracticioner(null)}
+            />
+          ) : null}
         </>
       ) : null}
     </div>

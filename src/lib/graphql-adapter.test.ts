@@ -26,7 +26,7 @@ describe('graphql-adapter', () => {
     expect(data).toEqual({ hello: 'world' })
     expect(fetch).toHaveBeenCalledTimes(1)
     const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit]
-    expect(url).toBe('/api/v1/graphql')
+    expect(url).toBe('/graphql')
     expect(init.method).toBe('POST')
     expect(init.headers).toMatchObject({ Authorization: 'Bearer abc' })
     expect(JSON.parse(init.body as string)).toEqual({ query: '{ hello }', variables: undefined })

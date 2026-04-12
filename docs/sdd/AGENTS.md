@@ -35,6 +35,16 @@ In **this** repository the API prefix is **`/api/v1`** (e.g. `POST /api/v1/auth/
 
 ---
 
+## GraphQL HTTP path (not REST prefix)
+
+When writing **goals**, **acceptance criteria**, or **build plans** that mention GraphQL:
+
+- The GraphQL HTTP endpoint is **`/graphql`** by default in **both development and production**. It is **not** mounted under the REST API context path **`/api/v1`** (REST stays under `/api/v1/...`; GraphQL is a separate path on the same host unless `VITE_GRAPHQL_URL` overrides it).
+- Implementation: `graphqlHttpUrl()` in [`src/lib/api.ts`](../../src/lib/api.ts) with `VITE_GRAPHQL_URL` optional override (path or absolute URL), per root [`AGENTS.md`](../../AGENTS.md) — *GraphQL adapter*.
+- **Do not** assume or document **`/api/v1/graphql`** as the standard app default when planning features; that path is out of scope for this project’s default wiring.
+
+---
+
 ## Feature identity and filenames
 
 - Registry entries use the heading form: `### [FEAT-NNN] Short title` (three-digit zero-padded ID, e.g. `FEAT-001`).

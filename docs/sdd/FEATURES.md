@@ -62,9 +62,39 @@ Any open questions, design decisions, or links.
 
 ## Backlog
 
+## Done
+
 ---
 
-## Done
+### [FEAT-010] Add Practicioners details section to the Practicioners search page.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** -
+
+#### Goal
+Add a section to the Practicioners search page to display the details of the practicioner.
+This section is in the lower part of the page and it is displayed when a practicioner is selected from the Practicioners search page.
+This section should have the following information:
+- Practicioner name
+- Subsections accessible from a horizontal menu at the top of the section.
+- Subsections:
+  - Matches. This subsection should display the matches where the practicioner has participated this last season.
+  - Clubs. This subsection should display the clubs where the practicioner is a member of or has been for the last years.
+  - Stats. This subsection should display the stats of the practicioner.
+
+##### Practicioner details wireframe
+![Practicioner details wireframe](../../.wireframes/practicioner_detail_layout-1.png)
+
+#### Acceptance Criteria
+- [x] The Practicioners details section is added to the Practicioners search page.
+- [x] The Practicioners details section is displayed when a practicioner is selected from the Practicioners search page.
+- [x] The Matches subsection is displayed and it displays the matches where the practicioner has participated this last season.
+- [x] The Clubs subsection is displayed and it displays the clubs where the practicioner is a member of or has been for the last years.
+- [x] The Stats subsection is displayed and it displays the stats of the practicioner.
+
+#### Feature Details
+→ See [FEAT-010-DETAILS.md](./FEAT-010-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
 
 ---
 
