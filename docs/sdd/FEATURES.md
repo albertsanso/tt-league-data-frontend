@@ -66,6 +66,55 @@ Any open questions, design decisions, or links.
 
 ---
 
+### [FEAT-012] Practicioner details section in Practicioners search page imporvements.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-010
+
+#### Goal
+Improve the Practicioner details section in the Practicioners search page:
+- Season selector:
+  - Selector with options from the seasons search page: sorted descending by year ["2018-2019", "2019-2020", "2020-2021", "2021-2022", "2022-2023", "2023-2024", "2024-2025"]
+  - The selector is used to filter the matches, clubs and stats data.
+  - The selector is used to display the matches, clubs and stats data for the selected season.
+- Matches subsection:
+  - Before the matches list, a summary of the matches is displayed with the following information:
+    - Total matches: the total number of matches where the practicioner has participated in the selected season.
+    - Total wins: the total number of matches where the practicioner has won the match in the selected season.
+    - Total losses: the total number of matches where the practicioner has lost the match in the selected season.
+    - Total ties: the total number of matches where the practicioner has tied the match in the selected season.
+  - Matches list can be sorted by day number ascending or descending.
+  - Matches card style is RED when the practicioner has lost the match.
+  - Matches card style is GREEN when the practicioner has won the match.
+  - Matches card style is YELLOW when the practicioner has tied the match.
+
+  - Clubs subsection:
+    - Clubs list can be sorted by name ascending or descending.
+    - Season Ranges column displays the years range where the practicioner has been a member of the club.
+  
+  - Stats subsection:
+    - Will display a point cloud scatter chart of the practicioner's matches.
+    - The chart will display 2 axes:
+      - X axis: 0, 1, 2, 3 as the scored points in the match.
+      - Y axis: A, B, C, X, Y, Z as the letter the practicioner is asigned to the match
+
+#### Notes
+- The matches, clubs and stats data is retrieved from the backend using the GraphQL adapter.
+- The point cloud scatter chart is displayed using the react-chartjs-2 library.
+- Mapping for the terms: local<->home, visitor<->away.
+- Winning player A over player B means that player A has won the match and player A score is higher than player B score.
+
+#### Acceptance Criteria
+- [x] The Matches subsection is improved and displays the matches where the practicioner has participated in the selected season.
+- [x] The Clubs subsection is improved and displays the clubs where the practicioner is a member of or has been for the selected season.
+- [x] The Stats subsection is improved and displays a point cloud scatter chart of the practicioner's matches in the selected season.
+
+#### Feature Details
+→ See [FEAT-012-DETAILS.md](./FEAT-012-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
 ### [FEAT-011] Update rest adapter and related logic from openapi.yaml spec
 - **Status:** done
 - **Priority:** high

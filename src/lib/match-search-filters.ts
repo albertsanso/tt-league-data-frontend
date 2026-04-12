@@ -23,6 +23,12 @@ export const MATCH_SEASON_OPTIONS: readonly (string | MatchSearchAll)[] = [
   '2024-2025',
 ]
 
+/** Same season strings as the matches search page, newest year first (for practitioner details, etc.). */
+export function matchSeasonOptionsDescending(): readonly string[] {
+  const seasons = MATCH_SEASON_OPTIONS.filter((s): s is string => s !== MATCH_SEARCH_ALL)
+  return [...seasons].reverse()
+}
+
 export const MATCH_COMPETITION_SCOPE_OPTIONS: readonly (string | MatchSearchAll)[] = [
   MATCH_SEARCH_ALL,
   'provincial',

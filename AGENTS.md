@@ -23,6 +23,7 @@ This document outlines the comprehensive requirements for a Table Tennis Leagues
 - **Styling:** Tailwind CSS
 - **Routing:** react-router-dom v6
 - **Icons:** lucide-react
+- **Charts:** `chart.js`, `react-chartjs-2` (practitioner match scatter — FEAT-012)
 
 **Stage:** Early development
 

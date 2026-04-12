@@ -4,13 +4,22 @@ import type { GraphqlMatchSearchRow } from '../../../services/graphql/matches'
 export interface MatchResultCardProps {
   match: GraphqlMatchSearchRow
   className?: string
+  /** When set, tints the card for practitioner win/loss/tie (practitioner details only). */
+  outcomeTone?: 'win' | 'loss' | 'tie'
 }
 
-export function MatchResultCard({ match, className }: MatchResultCardProps) {
+const toneClasses: Record<NonNullable<MatchResultCardProps['outcomeTone']>, string> = {
+  win: 'border-emerald-400 bg-emerald-50/80',
+  loss: 'border-red-400 bg-red-50/80',
+  tie: 'border-amber-400 bg-amber-50/80',
+}
+
+export function MatchResultCard({ match, className, outcomeTone }: MatchResultCardProps) {
   return (
     <article
       className={cn(
         'rounded-lg border border-gray-200 bg-white p-4 shadow-sm',
+        outcomeTone ? toneClasses[outcomeTone] : null,
         className,
       )}
     >
