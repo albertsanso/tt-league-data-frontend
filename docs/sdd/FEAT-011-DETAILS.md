@@ -62,3 +62,4 @@
 
 - **Relation to FEAT-007:** Same workflow; FEAT-011 is an iteration triggered by a **new** contract snapshot, not a redesign from scratch.
 - **OpenAPI quirks:** If path templates and parameter names disagree in the published YAML, confirm the **live backend** path before changing the frontend.
+- **Shipped (2026-04-12):** Registry closed as **done**; codebase aligned with current **`openapi.yaml`**, REST via **`rest-adapter.ts`**, checks green per acceptance criteria.

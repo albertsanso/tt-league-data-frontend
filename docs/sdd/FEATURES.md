@@ -62,8 +62,12 @@ Any open questions, design decisions, or links.
 
 ## Backlog
 
+## Done
+
+---
+
 ### [FEAT-011] Update rest adapter and related logic from openapi.yaml spec
-- **Status:** planned
+- **Status:** done
 - **Priority:** high
 - **Effort:** medium
 - **Depends on:** —
@@ -72,13 +76,11 @@ Any open questions, design decisions, or links.
 Re-align **`src/types`**, **`src/services/*`**, and UI with the current **`openapi.yaml`** snapshot after contract changes (iteration after FEAT-007).
 
 #### Acceptance Criteria
-- [ ] Types and service paths/methods match the published **`openapi.yaml`** (incl. register **`email`**, **`ClubMember`** / full **`season_player`** surface in services, practicioner CRUD removed where absent from spec)
-- [ ] All API calls go through **`src/lib/rest-adapter.ts`**; **`npm run type-check`**, **`npm run lint`**, and **`npm run test`** pass
+- [x] Types and service paths/methods match the published **`openapi.yaml`** (incl. register **`email`**, **`ClubMember`** / full **`season_player`** surface in services, practicioner CRUD removed where absent from spec)
+- [x] All API calls go through **`src/lib/rest-adapter.ts`**; **`npm run type-check`**, **`npm run lint`**, and **`npm run test`** pass
 
 #### Feature Details
 → See [FEAT-011-DETAILS.md](./FEAT-011-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
-
-## Done
 
 ---
 
