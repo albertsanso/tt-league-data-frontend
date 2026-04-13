@@ -28,6 +28,15 @@ export function MatchResultCard({ match, className, outcomeTone }: MatchResultCa
         <span className="mx-2 font-normal text-gray-300">·</span>
         <span className="normal-case">Match day {match.matchDayNumber}</span>
       </p>
+      <p className="mb-3 text-xs text-gray-500">
+        <span className="font-medium text-gray-600">Competition</span>
+        <span className="mx-1.5 text-gray-300">·</span>
+        {[
+          match.competitionScope.trim() || '—',
+          match.competitionType.trim() || '—',
+          match.competitionCategory.trim() || '—',
+        ].join(' · ')}
+      </p>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <p className="mb-1 text-xs text-gray-500">Home</p>

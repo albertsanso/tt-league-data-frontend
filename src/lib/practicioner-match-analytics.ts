@@ -1,6 +1,6 @@
 import type { GraphqlMatchSearchRow } from '../services/graphql/matches'
 
-/** Y-axis letter order for the practitioner match scatter chart (spec). */
+/** Slot letter order for practitioner match distribution charts (bar chart, etc.). */
 export const SCATTER_LETTER_ORDER = ['A', 'B', 'C', 'X', 'Y', 'Z'] as const
 
 export type ScatterLetter = (typeof SCATTER_LETTER_ORDER)[number]
@@ -55,50 +55,21 @@ function isScatterLetter(s: string): s is ScatterLetter {
   return SCATTER_LETTER_SET.has(s)
 }
 
-/** Deterministic pseudo-random in [0, 1) for stable jitter per match id. */
-function stableUnitFromId(seed: string, salt: string): number {
-  let h = 0
-  const s = seed + salt
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
-  return (h % 10007) / 10007
-}
-
-export interface PractitionerScatterPoint {
-  /** Own score clamped to [0, 3], with tiny jitter for overlapping points. */
-  x: number
-  /** Index in `SCATTER_LETTER_ORDER` with tiny jitter. */
-  y: number
-  yLabel: ScatterLetter
-}
-
 /**
- * One scatter point per match: X = own points (clamped 0–3), Y = assigned letter A/B/C/X/Y/Z.
- * Returns null if side unknown, scores invalid, or letter not in the allowed set.
+ * Slot letter (A–C, X–Z) for the practitioner in this row, if side and scores are valid for charting.
+ * Same eligibility as the former scatter chart (ties still counted via `getOutcomeForPractitioner`).
  */
-/** Practitioner’s own score clamped to [0, 3] for display (no jitter). */
-export function getOwnScoreClamped(row: GraphqlMatchSearchRow, fullName: string): number | null {
-  const side = getPractitionerSide(row, fullName)
-  if (side === 'unknown') return null
-  const ownScore = parseMatchScore(side === 'home' ? row.localPlayerScore : row.visitorPlayerScore)
-  if (ownScore === null) return null
-  return Math.min(3, Math.max(0, ownScore))
-}
-
-export function getScatterPoint(
+function getEligibleLetterForPractitioner(
   row: GraphqlMatchSearchRow,
   fullName: string,
-): PractitionerScatterPoint | null {
+): ScatterLetter | null {
   const side = getPractitionerSide(row, fullName)
   if (side === 'unknown') return null
   const letterRaw = (side === 'home' ? row.localPlayerLetter : row.visitorPlayerLetter).trim().toUpperCase()
   if (!isScatterLetter(letterRaw)) return null
   const ownScore = parseMatchScore(side === 'home' ? row.localPlayerScore : row.visitorPlayerScore)
   if (ownScore === null) return null
-  const clamped = Math.min(3, Math.max(0, ownScore))
-  const yIndex = SCATTER_LETTER_ORDER.indexOf(letterRaw)
-  const jx = (stableUnitFromId(row.id, 'x') - 0.5) * 0.14
-  const jy = (stableUnitFromId(row.id, 'y') - 0.5) * 0.22
-  return { x: clamped + jx, y: yIndex + jy, yLabel: letterRaw }
+  return letterRaw
 }
 
 export interface MatchOutcomeSummary {
@@ -107,6 +78,32 @@ export interface MatchOutcomeSummary {
   losses: number
   ties: number
   unscored: number
+}
+
+export interface WinsLossesByLetter {
+  wins: number
+  losses: number
+}
+
+/**
+ * Win/loss counts per slot letter (A–C, X–Z), same eligibility as the former scatter chart.
+ * Ties and unscored matches are omitted.
+ */
+export function summarizeWinsLossesByLetter(
+  matches: GraphqlMatchSearchRow[],
+  fullName: string,
+): Record<ScatterLetter, WinsLossesByLetter> {
+  const byLetter = Object.fromEntries(
+    SCATTER_LETTER_ORDER.map((L) => [L, { wins: 0, losses: 0 }]),
+  ) as Record<ScatterLetter, WinsLossesByLetter>
+  for (const m of matches) {
+    const letter = getEligibleLetterForPractitioner(m, fullName)
+    if (!letter) continue
+    const o = getOutcomeForPractitioner(m, fullName)
+    if (o === 'win') byLetter[letter].wins += 1
+    else if (o === 'loss') byLetter[letter].losses += 1
+  }
+  return byLetter
 }
 
 export function summarizeMatchOutcomes(

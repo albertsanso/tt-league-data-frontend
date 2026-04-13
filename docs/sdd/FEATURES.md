@@ -64,6 +64,67 @@ Any open questions, design decisions, or links.
 
 ## Done
 
+### [FEAT-015] Remove all filters in the Practicioner details Stats subsection and keep only competition_scope, competition_type and competition_category.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-014
+
+#### Goal
+- Remove all filters in the Practicioner details Stats subsection and keep only competition_scope, competition_type and competition_category.
+
+#### Acceptance Criteria
+- [x] The filters are removed from the Practicioner details Stats subsection and keep only competition_scope, competition_type and competition_category.
+- [x] Matches used for the Stats subsection (bar chart and counts) are filtered by competition_scope, competition_type and competition_category.
+
+#### Feature Details
+→ See [FEAT-015-DETAILS.md](./FEAT-015-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-014] Remove cloud scatter chart from Practicioner details Stats subsection
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-013
+
+#### Goal
+- Remove the cloud scatter chart from the Practicioner details Stats subsection
+- (Also shipped: Stats filters for the bar chart, competition fields on match search rows/cards, GraphQL search field extension — see details file.)
+
+#### Acceptance Criteria
+- [x] The cloud scatter chart is removed from the Practicioner details Stats subsection.
+
+#### Feature Details
+→ See [FEAT-014-DETAILS.md](./FEAT-014-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-013] Improvements in Stats subsection of Practicioner details section.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-012
+
+#### Goal
+Improve the Stats subsection of the Practicioner details section:
+- Remove registrations for the season from the stats subsection.
+- Build a match distribution Bar Chart as an HTML widget.
+  - Chart type: grouped bar chart (wins vs losses side by side)
+  - Opponents: 6 opponents labeled A, B, C, X, Y, Z
+  - Omit ties from the chart.
+  - Style it cleanly with flat design, no gradients or shadows. Use green (#639922) for wins and red (#E24B4A) for losses.
+  - The Bar Chart should be displayed in the stats subsection.
+
+#### Acceptance Criteria
+- [x] The registrations for the season are removed from the stats subsection.
+- [x] The match distribution Bar Chart is displayed in the stats subsection.
+- [x] The match distribution Bar Chart is styled cleanly with flat design, no gradients or shadows. Use green (#639922) for wins and red (#E24B4A) for losses.
+- [x] The match distribution Bar Chart is styled with green (#639922) for wins and red (#E24B4A) for losses.
+
+#### Feature Details
+→ See [FEAT-013-DETAILS.md](./FEAT-013-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
 ---
 
 ### [FEAT-012] Practicioner details section in Practicioners search page imporvements.

@@ -52,6 +52,10 @@ const FIND_MATCHES_BY_SEARCH = `
     ) {
       id
       season
+      competitionType
+      competitionCategory
+      competitionScope
+      competitionScopeTag
       matchDayNumber
       matchDateTime
       localPlayerName
@@ -76,6 +80,10 @@ export type GraphqlMatchSearchRow = Pick<
   GraphqlMatch,
   | 'id'
   | 'season'
+  | 'competitionType'
+  | 'competitionCategory'
+  | 'competitionScope'
+  | 'competitionScopeTag'
   | 'matchDayNumber'
   | 'matchDateTime'
   | 'localPlayerName'

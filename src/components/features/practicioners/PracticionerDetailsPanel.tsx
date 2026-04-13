@@ -4,7 +4,16 @@ import {
   outcomeToneFromOutcome,
   summarizeMatchOutcomes,
 } from '../../../lib/practicioner-match-analytics'
-import { matchSeasonOptionsDescending } from '../../../lib/match-search-filters'
+import {
+  MATCH_SEARCH_ALL,
+  matchSeasonOptionsDescending,
+} from '../../../lib/match-search-filters'
+import {
+  buildStatsFilterOptions,
+  DEFAULT_STATS_FILTER_SELECTION,
+  filterMatchesForStats,
+  type StatsFilterSelection,
+} from '../../../lib/practitioner-stats-match-filter'
 import { LATEST_LEAGUE_SEASON } from '../../../lib/season-config'
 import { cn } from '../../../lib/utils'
 import { fetchClubById } from '../../../services/clubs'
@@ -15,11 +24,10 @@ import {
   findMatchesVariablesForPractitionerInSeason,
   type GraphqlMatchSearchRow,
 } from '../../../services/graphql'
-import { fetchSeasonPlayersByPracticionerId } from '../../../services/players'
-import type { PracticionerDto, SeasonPlayerDto } from '../../../types'
+import type { PracticionerDto } from '../../../types'
 import { Button } from '../../ui/Button'
 import { MatchResultCard } from '../matches/MatchResultCard'
-import { PractitionerMatchScatterChart } from './PractitionerMatchScatterChart'
+import { PractitionerMatchDistributionBarChart } from './PractitionerMatchDistributionBarChart'
 
 export interface PracticionerDetailsPanelProps {
   practicioner: PracticionerDto
@@ -110,9 +118,9 @@ function PracticionerDetailsPanelInner({
   const [clubsNameSort, setClubsNameSort] = useState<SortDir>('asc')
   const [matchesState, setMatchesState] = useState<SliceState<GraphqlMatchSearchRow[]>>({ status: 'idle' })
   const [clubsState, setClubsState] = useState<SliceState<ClubRowDisplay[]>>({ status: 'idle' })
-  const [seasonPlayersState, setSeasonPlayersState] = useState<SliceState<SeasonPlayerDto[]>>({
-    status: 'idle',
-  })
+  const [statsFilterSelection, setStatsFilterSelection] = useState<StatsFilterSelection>(
+    DEFAULT_STATS_FILTER_SELECTION,
+  )
 
   const loadMatchesData = useCallback(async () => {
     setMatchesState((s) => (s.status === 'loading' ? s : { status: 'loading' }))
@@ -143,21 +151,9 @@ function PracticionerDetailsPanelInner({
     }
   }, [authToken, practicioner.id])
 
-  const loadSeasonPlayersData = useCallback(async () => {
-    setSeasonPlayersState((s) => (s.status === 'loading' ? s : { status: 'loading' }))
-    try {
-      const data = await fetchSeasonPlayersByPracticionerId(authToken, practicioner.id)
-      setSeasonPlayersState({ status: 'success', data })
-    } catch (e) {
-      setSeasonPlayersState({
-        status: 'error',
-        message: e instanceof Error ? e.message : 'Failed to load season registrations',
-      })
-    }
-  }, [authToken, practicioner.id])
-
   useEffect(() => {
     setMatchesState({ status: 'idle' })
+    setStatsFilterSelection(DEFAULT_STATS_FILTER_SELECTION)
   }, [selectedSeason])
 
   useEffect(() => {
@@ -177,11 +173,6 @@ function PracticionerDetailsPanelInner({
     if (matchesState.status === 'idle') void loadMatchesData()
   }, [activeTab, matchesState.status, loadMatchesData])
 
-  useEffect(() => {
-    if (activeTab !== 'stats') return
-    if (seasonPlayersState.status === 'idle') void loadSeasonPlayersData()
-  }, [activeTab, seasonPlayersState.status, loadSeasonPlayersData])
-
   const matchSummary = useMemo(() => {
     if (matchesState.status !== 'success') return null
     return summarizeMatchOutcomes(matchesState.data, practicioner.fullName)
@@ -198,6 +189,21 @@ function PracticionerDetailsPanelInner({
     return copy
   }, [matchesState, matchesDaySort])
 
+  const statsFilterOptions = useMemo(() => {
+    if (matchesState.status !== 'success') return null
+    return buildStatsFilterOptions(matchesState.data)
+  }, [matchesState])
+
+  const filteredMatchesForStats = useMemo(() => {
+    if (matchesState.status !== 'success') return []
+    return filterMatchesForStats(matchesState.data, statsFilterSelection)
+  }, [matchesState, statsFilterSelection])
+
+  const statsFilteredSummary = useMemo(() => {
+    if (matchesState.status !== 'success') return null
+    return summarizeMatchOutcomes(filteredMatchesForStats, practicioner.fullName)
+  }, [matchesState, filteredMatchesForStats, practicioner.fullName])
+
   const sortedClubRows = useMemo(() => {
     if (clubsState.status !== 'success') return []
     const copy = clubsState.data.filter((row) => clubMembershipTouchesSeason(row, selectedSeason))
@@ -208,13 +214,6 @@ function PracticionerDetailsPanelInner({
     )
     return copy
   }, [clubsState, clubsNameSort, selectedSeason])
-
-  const registrationsForSeason = useMemo(() => {
-    if (seasonPlayersState.status !== 'success') return []
-    return seasonPlayersState.data.filter(
-      (sp) => sp.yearRange === selectedSeason || sp.yearRange.includes(selectedSeason),
-    )
-  }, [seasonPlayersState, selectedSeason])
 
   const tabIds = {
     matches: 'pract-detail-tab-matches',
@@ -481,8 +480,8 @@ function PracticionerDetailsPanelInner({
           className={cn(activeTab !== 'stats' && 'hidden')}
         >
           <p className="mb-4 text-sm text-gray-600">
-            Match scatter for season <span className="font-medium text-gray-800">{selectedSeason}</span> — points
-            scored vs assigned letter (A–C, X–Z).
+            Stats for season <span className="font-medium text-gray-800">{selectedSeason}</span>: win/loss count by slot
+            letter (A–C, X–Z; ties omitted). Narrow the chart by competition scope, type, and category below.
           </p>
           {matchesState.status === 'loading' ? (
             <p className="text-sm text-gray-600">Loading matches…</p>
@@ -494,53 +493,84 @@ function PracticionerDetailsPanelInner({
           ) : null}
           {matchesState.status === 'success' ? (
             <div className="flex flex-col gap-4">
-              <PractitionerMatchScatterChart
-                matches={matchesState.data}
-                practitionerFullName={practicioner.fullName}
-              />
-              {matchSummary && matchSummary.unscored > 0 ? (
-                <p className="text-xs text-gray-500">
-                  {matchSummary.unscored} match{matchSummary.unscored === 1 ? '' : 'es'} omitted from the chart
-                  (side or score unknown, or letter outside A–C / X–Z).
-                </p>
-              ) : null}
-              {seasonPlayersState.status === 'loading' ? (
-                <p className="text-sm text-gray-600">Loading season registrations…</p>
-              ) : null}
-              {seasonPlayersState.status === 'error' ? (
-                <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-                  Registrations: {seasonPlayersState.message}
-                </p>
-              ) : null}
-              {seasonPlayersState.status === 'success' && registrationsForSeason.length > 0 ? (
-                <div>
-                  <h3 className="mb-2 text-sm font-semibold text-gray-900">
-                    Registrations for {selectedSeason}
-                  </h3>
-                  <div className="overflow-x-auto rounded-lg border border-gray-200">
-                    <table className="w-full min-w-[360px] border-collapse text-left text-sm">
-                      <thead>
-                        <tr className="border-b border-gray-200 bg-gray-50">
-                          <th className="px-4 py-3 font-semibold text-gray-900">Season</th>
-                          <th className="px-4 py-3 font-semibold text-gray-900">License</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {registrationsForSeason.map((sp) => (
-                          <tr key={sp.id} className="border-b border-gray-100 last:border-0">
-                            <td className="px-4 py-3 text-gray-900">{sp.yearRange}</td>
-                            <td className="px-4 py-3 text-gray-600">{sp.licenseTag}</td>
-                          </tr>
+              {matchesState.data.length > 0 && statsFilterOptions ? (
+                <>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <label className="flex flex-col gap-1 text-sm">
+                      <span className="font-medium text-gray-700">Competition scope</span>
+                      <select
+                        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={statsFilterSelection.competitionScope}
+                        onChange={(e) =>
+                          setStatsFilterSelection((s) => ({ ...s, competitionScope: e.target.value }))
+                        }
+                      >
+                        <option value={MATCH_SEARCH_ALL}>All</option>
+                        {statsFilterOptions.competitionScopes.map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
                         ))}
-                      </tbody>
-                    </table>
+                      </select>
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm">
+                      <span className="font-medium text-gray-700">Competition type</span>
+                      <select
+                        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={statsFilterSelection.competitionType}
+                        onChange={(e) =>
+                          setStatsFilterSelection((s) => ({ ...s, competitionType: e.target.value }))
+                        }
+                      >
+                        <option value={MATCH_SEARCH_ALL}>All</option>
+                        {statsFilterOptions.competitionTypes.map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm">
+                      <span className="font-medium text-gray-700">Competition category</span>
+                      <select
+                        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={statsFilterSelection.competitionCategory}
+                        onChange={(e) =>
+                          setStatsFilterSelection((s) => ({ ...s, competitionCategory: e.target.value }))
+                        }
+                      >
+                        <option value={MATCH_SEARCH_ALL}>All</option>
+                        {statsFilterOptions.competitionCategories.map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                   </div>
-                </div>
+                  <p className="text-xs text-gray-500">
+                    Showing{' '}
+                    <span className="font-medium text-gray-700">{filteredMatchesForStats.length}</span> of{' '}
+                    <span className="tabular-nums">{matchesState.data.length}</span> matches in this season.
+                  </p>
+                </>
               ) : null}
-              {seasonPlayersState.status === 'success' &&
-              seasonPlayersState.data.length > 0 &&
-              registrationsForSeason.length === 0 ? (
-                <p className="text-sm text-gray-600">No season registrations for {selectedSeason}.</p>
+              {matchesState.data.length > 0 && filteredMatchesForStats.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-amber-200 bg-amber-50/60 px-4 py-4 text-sm text-amber-900">
+                  No matches match the selected filters. Choose &ldquo;All&rdquo; on one or more filters to widen the
+                  set.
+                </p>
+              ) : (
+                <PractitionerMatchDistributionBarChart
+                  matches={filteredMatchesForStats}
+                  practitionerFullName={practicioner.fullName}
+                />
+              )}
+              {statsFilteredSummary && statsFilteredSummary.unscored > 0 ? (
+                <p className="text-xs text-gray-500">
+                  {statsFilteredSummary.unscored} match{statsFilteredSummary.unscored === 1 ? '' : 'es'} in the filtered
+                  set omitted from the chart (side or score unknown, or letter outside A–C / X–Z).
+                </p>
               ) : null}
             </div>
           ) : null}
