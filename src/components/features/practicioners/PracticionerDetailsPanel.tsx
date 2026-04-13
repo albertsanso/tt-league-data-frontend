@@ -475,7 +475,7 @@ function PracticionerDetailsPanelInner({
                       const tone = outcomeToneFromOutcome(outcome)
                       return (
                         <li key={m.id}>
-                          <MatchResultCard match={m} outcomeTone={tone} />
+                          <MatchResultCard layout="practitioner" match={m} outcomeTone={tone} />
                         </li>
                       )
                     })}

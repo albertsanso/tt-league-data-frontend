@@ -64,7 +64,30 @@ Any open questions, design decisions, or links.
 
 ## Done
 
---- 
+### [FEAT-018] Modify layout for the cards in practicioners matches section
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** —
+
+#### Goal
+- Modify the layout of the cards in the practicioners matches section.
+  - Top row in card: season, "Match day number" label, matchDayNumber, "Home" label, home club name, "Away" label, away club name.
+  - Next row in card: "Competition" label, followed by competition_type, competition_category.
+  - Next row in card: "Home" label, followed by home player name, home player score.
+  - Next row in card: "Away" label, followed by away player name, away player score.
+
+#### Acceptance Criteria
+- [x] The layout of the cards in the practicioners matches section is modified.
+- [x] The top row in card: season, matchDayNumber, home club name, away club name.
+- [x] The next row in card: "Competition" label, followed by competition_type, competition_category.
+- [x] The next row in card: "Home" label, followed by home player name, home player score.
+- [x] The next row in card: "Away" label, followed by away player name, away player score.
+
+#### Feature Details
+→ See [FEAT-018-DETAILS.md](./FEAT-018-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
 
 ### [FEAT-017] Update graphql adapter and related logic from schema.graphqls spec
 - **Status:** done
