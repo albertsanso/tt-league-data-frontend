@@ -9,10 +9,10 @@ import {
   matchSeasonOptionsDescending,
 } from '../../../lib/match-search-filters'
 import {
-  buildStatsFilterOptions,
-  DEFAULT_STATS_FILTER_SELECTION,
-  filterMatchesForStats,
-  type StatsFilterSelection,
+  buildCompetitionFilterOptions,
+  DEFAULT_COMPETITION_FILTER_SELECTION,
+  filterMatchesByCompetition,
+  type CompetitionFilterSelection,
 } from '../../../lib/practitioner-stats-match-filter'
 import { LATEST_LEAGUE_SEASON } from '../../../lib/season-config'
 import { cn } from '../../../lib/utils'
@@ -118,8 +118,8 @@ function PracticionerDetailsPanelInner({
   const [clubsNameSort, setClubsNameSort] = useState<SortDir>('asc')
   const [matchesState, setMatchesState] = useState<SliceState<GraphqlMatchSearchRow[]>>({ status: 'idle' })
   const [clubsState, setClubsState] = useState<SliceState<ClubRowDisplay[]>>({ status: 'idle' })
-  const [statsFilterSelection, setStatsFilterSelection] = useState<StatsFilterSelection>(
-    DEFAULT_STATS_FILTER_SELECTION,
+  const [competitionFilterSelection, setCompetitionFilterSelection] = useState<CompetitionFilterSelection>(
+    DEFAULT_COMPETITION_FILTER_SELECTION,
   )
 
   const loadMatchesData = useCallback(async () => {
@@ -153,7 +153,7 @@ function PracticionerDetailsPanelInner({
 
   useEffect(() => {
     setMatchesState({ status: 'idle' })
-    setStatsFilterSelection(DEFAULT_STATS_FILTER_SELECTION)
+    setCompetitionFilterSelection(DEFAULT_COMPETITION_FILTER_SELECTION)
   }, [selectedSeason])
 
   useEffect(() => {
@@ -173,36 +173,31 @@ function PracticionerDetailsPanelInner({
     if (matchesState.status === 'idle') void loadMatchesData()
   }, [activeTab, matchesState.status, loadMatchesData])
 
-  const matchSummary = useMemo(() => {
+  const competitionFilterOptions = useMemo(() => {
     if (matchesState.status !== 'success') return null
-    return summarizeMatchOutcomes(matchesState.data, practicioner.fullName)
-  }, [matchesState, practicioner.fullName])
+    return buildCompetitionFilterOptions(matchesState.data)
+  }, [matchesState])
+
+  const filteredMatchesByCompetition = useMemo(() => {
+    if (matchesState.status !== 'success') return []
+    return filterMatchesByCompetition(matchesState.data, competitionFilterSelection)
+  }, [matchesState, competitionFilterSelection])
+
+  const filteredMatchSummary = useMemo(() => {
+    if (matchesState.status !== 'success') return null
+    return summarizeMatchOutcomes(filteredMatchesByCompetition, practicioner.fullName)
+  }, [matchesState, filteredMatchesByCompetition, practicioner.fullName])
 
   const sortedMatches = useMemo(() => {
     if (matchesState.status !== 'success') return []
-    const copy = [...matchesState.data]
+    const copy = [...filteredMatchesByCompetition]
     copy.sort((a, b) => {
       const da = matchDayNumeric(a)
       const db = matchDayNumeric(b)
       return matchesDaySort === 'asc' ? da - db : db - da
     })
     return copy
-  }, [matchesState, matchesDaySort])
-
-  const statsFilterOptions = useMemo(() => {
-    if (matchesState.status !== 'success') return null
-    return buildStatsFilterOptions(matchesState.data)
-  }, [matchesState])
-
-  const filteredMatchesForStats = useMemo(() => {
-    if (matchesState.status !== 'success') return []
-    return filterMatchesForStats(matchesState.data, statsFilterSelection)
-  }, [matchesState, statsFilterSelection])
-
-  const statsFilteredSummary = useMemo(() => {
-    if (matchesState.status !== 'success') return null
-    return summarizeMatchOutcomes(filteredMatchesForStats, practicioner.fullName)
-  }, [matchesState, filteredMatchesForStats, practicioner.fullName])
+  }, [matchesState, filteredMatchesByCompetition, matchesDaySort])
 
   const sortedClubRows = useMemo(() => {
     if (clubsState.status !== 'success') return []
@@ -289,8 +284,9 @@ function PracticionerDetailsPanelInner({
           ))}
         </select>
         <p className="mt-2 text-xs text-gray-500">
-          Matches and stats use this season. Clubs list shows memberships whose season ranges mention it (or all rows
-          when ranges are unavailable).
+          Matches and stats use this season. Competition filters under the tabs apply to both the Matches list and the
+          Stats chart. Clubs list shows memberships whose season ranges mention it (or all rows when ranges are
+          unavailable).
         </p>
       </div>
 
@@ -324,6 +320,76 @@ function PracticionerDetailsPanelInner({
         ))}
       </div>
 
+      {matchesState.status === 'success' && matchesState.data.length > 0 && competitionFilterOptions ? (
+        <div
+          className="border-b border-gray-200 bg-white px-4 py-3 sm:px-5"
+          aria-label="Competition filters for matches and stats"
+        >
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">Competition filters</p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <label className="flex flex-col gap-1 text-sm" htmlFor="pract-comp-filter-scope">
+              <span className="font-medium text-gray-700">Competition scope</span>
+              <select
+                id="pract-comp-filter-scope"
+                className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={competitionFilterSelection.competitionScope}
+                onChange={(e) =>
+                  setCompetitionFilterSelection((s) => ({ ...s, competitionScope: e.target.value }))
+                }
+              >
+                <option value={MATCH_SEARCH_ALL}>All</option>
+                {competitionFilterOptions.competitionScopes.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-sm" htmlFor="pract-comp-filter-type">
+              <span className="font-medium text-gray-700">Competition type</span>
+              <select
+                id="pract-comp-filter-type"
+                className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={competitionFilterSelection.competitionType}
+                onChange={(e) =>
+                  setCompetitionFilterSelection((s) => ({ ...s, competitionType: e.target.value }))
+                }
+              >
+                <option value={MATCH_SEARCH_ALL}>All</option>
+                {competitionFilterOptions.competitionTypes.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-sm" htmlFor="pract-comp-filter-category">
+              <span className="font-medium text-gray-700">Competition category</span>
+              <select
+                id="pract-comp-filter-category"
+                className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={competitionFilterSelection.competitionCategory}
+                onChange={(e) =>
+                  setCompetitionFilterSelection((s) => ({ ...s, competitionCategory: e.target.value }))
+                }
+              >
+                <option value={MATCH_SEARCH_ALL}>All</option>
+                {competitionFilterOptions.competitionCategories.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <p className="mt-2 text-xs text-gray-500">
+            Showing{' '}
+            <span className="font-medium text-gray-700">{filteredMatchesByCompetition.length}</span> of{' '}
+            <span className="tabular-nums">{matchesState.data.length}</span> matches in this season.
+          </p>
+        </div>
+      ) : null}
+
       <div className="min-h-[12rem] p-4 sm:p-5">
         <div
           id={panelIds.matches}
@@ -348,65 +414,74 @@ function PracticionerDetailsPanelInner({
           ) : null}
           {matchesState.status === 'success' && matchesState.data.length > 0 ? (
             <>
-              {matchSummary ? (
-                <dl className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
-                    <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">Total matches</dt>
-                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-gray-900">
-                      {matchSummary.total}
-                    </dd>
-                  </div>
-                  <div className="rounded-lg border border-emerald-100 bg-emerald-50/60 px-3 py-2">
-                    <dt className="text-xs font-medium uppercase tracking-wide text-emerald-800">Total wins</dt>
-                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-emerald-900">
-                      {matchSummary.wins}
-                    </dd>
-                  </div>
-                  <div className="rounded-lg border border-red-100 bg-red-50/60 px-3 py-2">
-                    <dt className="text-xs font-medium uppercase tracking-wide text-red-800">Total losses</dt>
-                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-red-900">
-                      {matchSummary.losses}
-                    </dd>
-                  </div>
-                  <div className="rounded-lg border border-amber-100 bg-amber-50/60 px-3 py-2">
-                    <dt className="text-xs font-medium uppercase tracking-wide text-amber-800">Total ties</dt>
-                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-amber-900">
-                      {matchSummary.ties}
-                    </dd>
-                  </div>
-                </dl>
-              ) : null}
-              {matchSummary && matchSummary.unscored > 0 ? (
-                <p className="mb-3 text-xs text-gray-500">
-                  {matchSummary.unscored} match{matchSummary.unscored === 1 ? '' : 'es'} could not be scored
-                  (name or score mismatch).
+              {filteredMatchesByCompetition.length === 0 ? (
+                <p className="mb-4 rounded-lg border border-dashed border-amber-200 bg-amber-50/60 px-4 py-4 text-sm text-amber-900">
+                  No matches match the selected competition filters. Choose &ldquo;All&rdquo; on one or more filters to
+                  widen the set.
                 </p>
-              ) : null}
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <label htmlFor="pract-matches-sort" className="text-sm font-medium text-gray-700">
-                  Sort by match day
-                </label>
-                <select
-                  id="pract-matches-sort"
-                  className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  value={matchesDaySort}
-                  onChange={(e) => setMatchesDaySort(e.target.value as SortDir)}
-                >
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
-                </select>
-              </div>
-              <ul className="flex max-h-[28rem] flex-col gap-3 overflow-y-auto" aria-label="Matches">
-                {sortedMatches.map((m) => {
-                  const outcome = getOutcomeForPractitioner(m, practicioner.fullName)
-                  const tone = outcomeToneFromOutcome(outcome)
-                  return (
-                    <li key={m.id}>
-                      <MatchResultCard match={m} outcomeTone={tone} />
-                    </li>
-                  )
-                })}
-              </ul>
+              ) : (
+                <>
+                  {filteredMatchSummary ? (
+                    <dl className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <div className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+                        <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">Total matches</dt>
+                        <dd className="mt-0.5 text-xl font-semibold tabular-nums text-gray-900">
+                          {filteredMatchSummary.total}
+                        </dd>
+                      </div>
+                      <div className="rounded-lg border border-emerald-100 bg-emerald-50/60 px-3 py-2">
+                        <dt className="text-xs font-medium uppercase tracking-wide text-emerald-800">Total wins</dt>
+                        <dd className="mt-0.5 text-xl font-semibold tabular-nums text-emerald-900">
+                          {filteredMatchSummary.wins}
+                        </dd>
+                      </div>
+                      <div className="rounded-lg border border-red-100 bg-red-50/60 px-3 py-2">
+                        <dt className="text-xs font-medium uppercase tracking-wide text-red-800">Total losses</dt>
+                        <dd className="mt-0.5 text-xl font-semibold tabular-nums text-red-900">
+                          {filteredMatchSummary.losses}
+                        </dd>
+                      </div>
+                      <div className="rounded-lg border border-amber-100 bg-amber-50/60 px-3 py-2">
+                        <dt className="text-xs font-medium uppercase tracking-wide text-amber-800">Total ties</dt>
+                        <dd className="mt-0.5 text-xl font-semibold tabular-nums text-amber-900">
+                          {filteredMatchSummary.ties}
+                        </dd>
+                      </div>
+                    </dl>
+                  ) : null}
+                  {filteredMatchSummary && filteredMatchSummary.unscored > 0 ? (
+                    <p className="mb-3 text-xs text-gray-500">
+                      {filteredMatchSummary.unscored} match{filteredMatchSummary.unscored === 1 ? '' : 'es'} could not
+                      be scored (name or score mismatch).
+                    </p>
+                  ) : null}
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <label htmlFor="pract-matches-sort" className="text-sm font-medium text-gray-700">
+                      Sort by match day
+                    </label>
+                    <select
+                      id="pract-matches-sort"
+                      className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      value={matchesDaySort}
+                      onChange={(e) => setMatchesDaySort(e.target.value as SortDir)}
+                    >
+                      <option value="asc">Ascending</option>
+                      <option value="desc">Descending</option>
+                    </select>
+                  </div>
+                  <ul className="flex max-h-[28rem] flex-col gap-3 overflow-y-auto" aria-label="Matches">
+                    {sortedMatches.map((m) => {
+                      const outcome = getOutcomeForPractitioner(m, practicioner.fullName)
+                      const tone = outcomeToneFromOutcome(outcome)
+                      return (
+                        <li key={m.id}>
+                          <MatchResultCard match={m} outcomeTone={tone} />
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </>
+              )}
             </>
           ) : null}
         </div>
@@ -481,7 +556,8 @@ function PracticionerDetailsPanelInner({
         >
           <p className="mb-4 text-sm text-gray-600">
             Stats for season <span className="font-medium text-gray-800">{selectedSeason}</span>: win/loss count by slot
-            letter (A–C, X–Z; ties omitted). Narrow the chart by competition scope, type, and category below.
+            letter (A–C, X–Z; ties omitted). Use the competition filters above the tab panels to narrow this chart (same
+            as the Matches list).
           </p>
           {matchesState.status === 'loading' ? (
             <p className="text-sm text-gray-600">Loading matches…</p>
@@ -493,82 +569,20 @@ function PracticionerDetailsPanelInner({
           ) : null}
           {matchesState.status === 'success' ? (
             <div className="flex flex-col gap-4">
-              {matchesState.data.length > 0 && statsFilterOptions ? (
-                <>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    <label className="flex flex-col gap-1 text-sm">
-                      <span className="font-medium text-gray-700">Competition scope</span>
-                      <select
-                        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        value={statsFilterSelection.competitionScope}
-                        onChange={(e) =>
-                          setStatsFilterSelection((s) => ({ ...s, competitionScope: e.target.value }))
-                        }
-                      >
-                        <option value={MATCH_SEARCH_ALL}>All</option>
-                        {statsFilterOptions.competitionScopes.map((v) => (
-                          <option key={v} value={v}>
-                            {v}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="flex flex-col gap-1 text-sm">
-                      <span className="font-medium text-gray-700">Competition type</span>
-                      <select
-                        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        value={statsFilterSelection.competitionType}
-                        onChange={(e) =>
-                          setStatsFilterSelection((s) => ({ ...s, competitionType: e.target.value }))
-                        }
-                      >
-                        <option value={MATCH_SEARCH_ALL}>All</option>
-                        {statsFilterOptions.competitionTypes.map((v) => (
-                          <option key={v} value={v}>
-                            {v}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="flex flex-col gap-1 text-sm">
-                      <span className="font-medium text-gray-700">Competition category</span>
-                      <select
-                        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        value={statsFilterSelection.competitionCategory}
-                        onChange={(e) =>
-                          setStatsFilterSelection((s) => ({ ...s, competitionCategory: e.target.value }))
-                        }
-                      >
-                        <option value={MATCH_SEARCH_ALL}>All</option>
-                        {statsFilterOptions.competitionCategories.map((v) => (
-                          <option key={v} value={v}>
-                            {v}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Showing{' '}
-                    <span className="font-medium text-gray-700">{filteredMatchesForStats.length}</span> of{' '}
-                    <span className="tabular-nums">{matchesState.data.length}</span> matches in this season.
-                  </p>
-                </>
-              ) : null}
-              {matchesState.data.length > 0 && filteredMatchesForStats.length === 0 ? (
+              {matchesState.data.length > 0 && filteredMatchesByCompetition.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-amber-200 bg-amber-50/60 px-4 py-4 text-sm text-amber-900">
-                  No matches match the selected filters. Choose &ldquo;All&rdquo; on one or more filters to widen the
-                  set.
+                  No matches match the selected competition filters. Choose &ldquo;All&rdquo; on one or more filters to
+                  widen the set.
                 </p>
               ) : (
                 <PractitionerMatchDistributionBarChart
-                  matches={filteredMatchesForStats}
+                  matches={filteredMatchesByCompetition}
                   practitionerFullName={practicioner.fullName}
                 />
               )}
-              {statsFilteredSummary && statsFilteredSummary.unscored > 0 ? (
+              {filteredMatchSummary && filteredMatchSummary.unscored > 0 ? (
                 <p className="text-xs text-gray-500">
-                  {statsFilteredSummary.unscored} match{statsFilteredSummary.unscored === 1 ? '' : 'es'} in the filtered
+                  {filteredMatchSummary.unscored} match{filteredMatchSummary.unscored === 1 ? '' : 'es'} in the filtered
                   set omitted from the chart (side or score unknown, or letter outside A–C / X–Z).
                 </p>
               ) : null}

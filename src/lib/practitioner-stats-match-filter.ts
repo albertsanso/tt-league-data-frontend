@@ -1,13 +1,13 @@
 import { MATCH_SEARCH_ALL } from './match-search-filters'
 import type { GraphqlMatchSearchRow } from '../services/graphql/matches'
 
-export interface StatsFilterOptions {
+export interface CompetitionFilterOptions {
   competitionScopes: string[]
   competitionTypes: string[]
   competitionCategories: string[]
 }
 
-export function buildStatsFilterOptions(matches: GraphqlMatchSearchRow[]): StatsFilterOptions {
+export function buildCompetitionFilterOptions(matches: GraphqlMatchSearchRow[]): CompetitionFilterOptions {
   const scopes = new Set<string>()
   const types = new Set<string>()
   const categories = new Set<string>()
@@ -26,21 +26,21 @@ export function buildStatsFilterOptions(matches: GraphqlMatchSearchRow[]): Stats
   }
 }
 
-export interface StatsFilterSelection {
+export interface CompetitionFilterSelection {
   competitionScope: string
   competitionType: string
   competitionCategory: string
 }
 
-export const DEFAULT_STATS_FILTER_SELECTION: StatsFilterSelection = {
+export const DEFAULT_COMPETITION_FILTER_SELECTION: CompetitionFilterSelection = {
   competitionScope: MATCH_SEARCH_ALL,
   competitionType: MATCH_SEARCH_ALL,
   competitionCategory: MATCH_SEARCH_ALL,
 }
 
-export function filterMatchesForStats(
+export function filterMatchesByCompetition(
   matches: GraphqlMatchSearchRow[],
-  sel: StatsFilterSelection,
+  sel: CompetitionFilterSelection,
 ): GraphqlMatchSearchRow[] {
   return matches.filter((row) => {
     if (sel.competitionScope !== MATCH_SEARCH_ALL) {

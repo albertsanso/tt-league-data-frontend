@@ -79,6 +79,10 @@ type Match {
     visitorPlayerLetter: String!
     visitorPlayerScore: String!
     matchDateTime: String!
+    localClubId: String!
+    localClubName: String!
+    visitorClubId: String!
+    visitorClubName: String!
 }
 
 input CompetitionInput {

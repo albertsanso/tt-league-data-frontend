@@ -44,6 +44,7 @@ export function MatchResultCard({ match, className, outcomeTone }: MatchResultCa
             <span className="mr-2 font-mono text-gray-600">{match.localPlayerLetter}</span>
             {match.localPlayerName}
           </p>
+          <p className="mt-0.5 text-xs text-gray-500">{match.localClubName.trim() || '—'}</p>
           <p className="mt-1 text-lg font-semibold tabular-nums text-gray-900">
             {match.localPlayerScore}
           </p>
@@ -54,6 +55,7 @@ export function MatchResultCard({ match, className, outcomeTone }: MatchResultCa
             <span className="mr-2 font-mono text-gray-600">{match.visitorPlayerLetter}</span>
             {match.visitorPlayerName}
           </p>
+          <p className="mt-0.5 text-xs text-gray-500">{match.visitorClubName.trim() || '—'}</p>
           <p className="mt-1 text-lg font-semibold tabular-nums text-gray-900">
             {match.visitorPlayerScore}
           </p>

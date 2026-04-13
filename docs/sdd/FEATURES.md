@@ -64,6 +64,49 @@ Any open questions, design decisions, or links.
 
 ## Done
 
+--- 
+
+### [FEAT-017] Update graphql adapter and related logic from schema.graphqls spec
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** —
+
+#### Goal
+- Update the graphql adapter and related logic from schema.graphqls spec.
+
+#### Acceptance Criteria
+- [x] The graphql adapter and related logic are updated from schema.graphqls spec (`GraphqlMatch` + match queries aligned; `requestGraphql` unchanged — already correct for transport).
+
+#### Feature Details
+→ See [FEAT-017-DETAILS.md](./FEAT-017-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-016] Add filters to the Practicioner details Matches subsection.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** FEAT-014, FEAT-015
+
+#### Goal
+- Add filters to the Practicioner details Matches subsection.
+  - The filters are competition_scope, competition_type and competition_category. The options are taken from the ones available in the search matches response for this practicioner.
+  - The filters are displayed in a dropdown menu.
+  - Controls live in a **shared** bar directly under the Matches / Clubs / Stats tabs (visible whenever season matches are loaded); they apply to the Matches list and to Stats.
+  - The matches shown in the Matches subsection are filtered by the competition_scope, competition_type and competition_category.
+- Matches and Stats filters are shared between the Matches and Stats subsections.
+
+#### Acceptance Criteria
+- [x] The filters are added to the Practicioner details Matches subsection (shared bar under tabs; applies to Matches).
+- [x] The matches shown in the Matches subsection are filtered by competition_scope, competition_type and competition_category.
+- [x] The filters are shared between the Matches and Stats subsections.
+
+#### Feature Details
+→ See [FEAT-016-DETAILS.md](./FEAT-016-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
 ### [FEAT-015] Remove all filters in the Practicioner details Stats subsection and keep only competition_scope, competition_type and competition_category.
 - **Status:** done
 - **Priority:** high

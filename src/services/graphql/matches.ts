@@ -3,9 +3,8 @@ import type { MatchSearchFilters } from '../../lib/match-search-filters'
 import { MATCH_SEARCH_ALL } from '../../lib/match-search-filters'
 import type { GraphqlCompetitionInput, GraphqlMatch } from '../../types'
 
-const FIND_MATCH_BY_ID = `
-  query FindMatchById($id: ID!) {
-    findMatchById(id: $id) {
+/** Scalar fields of `Match` from root `schema.graphqls` (shared by match queries). */
+const MATCH_FIELD_SELECTION = `
       id
       season
       competitionType
@@ -23,6 +22,16 @@ const FIND_MATCH_BY_ID = `
       visitorPlayerLetter
       visitorPlayerScore
       matchDateTime
+      localClubId
+      localClubName
+      visitorClubId
+      visitorClubName
+`
+
+const FIND_MATCH_BY_ID = `
+  query FindMatchById($id: ID!) {
+    findMatchById(id: $id) {
+${MATCH_FIELD_SELECTION}
     }
   }
 `
@@ -50,20 +59,7 @@ const FIND_MATCHES_BY_SEARCH = `
       matchDayNumber: $matchDayNumber
       practitionerName: $practitionerName
     ) {
-      id
-      season
-      competitionType
-      competitionCategory
-      competitionScope
-      competitionScopeTag
-      matchDayNumber
-      matchDateTime
-      localPlayerName
-      localPlayerLetter
-      localPlayerScore
-      visitorPlayerName
-      visitorPlayerLetter
-      visitorPlayerScore
+${MATCH_FIELD_SELECTION}
     }
   }
 `
@@ -75,24 +71,11 @@ export interface FindMatchesGraphqlVariables {
   practitionerName: string
 }
 
-/** Subset of `GraphqlMatch` fields returned by the search query above. */
-export type GraphqlMatchSearchRow = Pick<
-  GraphqlMatch,
-  | 'id'
-  | 'season'
-  | 'competitionType'
-  | 'competitionCategory'
-  | 'competitionScope'
-  | 'competitionScopeTag'
-  | 'matchDayNumber'
-  | 'matchDateTime'
-  | 'localPlayerName'
-  | 'localPlayerLetter'
-  | 'localPlayerScore'
-  | 'visitorPlayerName'
-  | 'visitorPlayerLetter'
-  | 'visitorPlayerScore'
->
+/**
+ * Match row from practitioner/season search; selection matches `FIND_MATCHES_BY_SEARCH` and aligns with `GraphqlMatch`
+ * in `schema.graphqls`.
+ */
+export type GraphqlMatchSearchRow = GraphqlMatch
 
 /**
  * Maps UI filters to GraphQL variables. `season` and `practitionerName` are `String!` in

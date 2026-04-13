@@ -114,6 +114,10 @@ export interface GraphqlMatch {
   visitorPlayerLetter: string
   visitorPlayerScore: string
   matchDateTime: string
+  localClubId: string
+  localClubName: string
+  visitorClubId: string
+  visitorClubName: string
 }
 
 /** `CompetitionInput` in `schema.graphqls` for GraphQL variables. */
