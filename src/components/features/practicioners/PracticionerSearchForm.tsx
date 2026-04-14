@@ -1,14 +1,24 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '../../ui/Button'
 import { Input } from '../../ui/Input'
 
 export interface PracticionerSearchFormProps {
   onSearch: (term: string) => void
   disabled?: boolean
+  /** Synced from `?q=` on `/practicioners` (deep link from club members). */
+  syncedInputValue?: string
 }
 
-export function PracticionerSearchForm({ onSearch, disabled }: PracticionerSearchFormProps) {
-  const [value, setValue] = useState('')
+export function PracticionerSearchForm({
+  onSearch,
+  disabled,
+  syncedInputValue = '',
+}: PracticionerSearchFormProps) {
+  const [value, setValue] = useState(syncedInputValue)
+
+  useEffect(() => {
+    setValue(syncedInputValue)
+  }, [syncedInputValue])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

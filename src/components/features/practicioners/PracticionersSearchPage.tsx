@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { PracticionerDto } from '../../../types'
 import { fetchPracticionersBySimilarName } from '../../../services/practicioners'
 import { useAuth } from '../../../store/AuthContext'
@@ -12,6 +13,9 @@ const PAGE_SIZE = 10
 export function PracticionersSearchPage() {
   const { session } = useAuth()
   const authToken = session?.token
+  const [searchParams] = useSearchParams()
+  /** Deep link from club members (`ClubDetailsSection`). */
+  const urlQuery = searchParams.get('q')?.trim() ?? ''
 
   const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null)
   const [results, setResults] = useState<PracticionerDto[]>([])
@@ -43,30 +47,38 @@ export function PracticionersSearchPage() {
     }
   }, [results, selectedPracticioner])
 
-  async function runSearch(term: string) {
-    if (!term) {
-      setError('Enter a name to search')
-      return
-    }
-    if (!authToken) {
-      setError('You must be signed in to search practicioners.')
-      return
-    }
-    setSelectedPracticioner(null)
-    setLastSearchTerm(term)
-    setPage(1)
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await fetchPracticionersBySimilarName(authToken, term)
-      setResults(data)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Search failed')
-      setResults([])
-    } finally {
-      setLoading(false)
-    }
-  }
+  const runSearch = useCallback(
+    async (term: string) => {
+      if (!term) {
+        setError('Enter a name to search')
+        return
+      }
+      if (!authToken) {
+        setError('You must be signed in to search practicioners.')
+        return
+      }
+      setSelectedPracticioner(null)
+      setLastSearchTerm(term)
+      setPage(1)
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await fetchPracticionersBySimilarName(authToken, term)
+        setResults(data)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Search failed')
+        setResults([])
+      } finally {
+        setLoading(false)
+      }
+    },
+    [authToken],
+  )
+
+  useEffect(() => {
+    if (!authToken || !urlQuery) return
+    void runSearch(urlQuery)
+  }, [authToken, urlQuery, runSearch])
 
   const hasSearched = lastSearchTerm !== null
 
@@ -90,6 +102,7 @@ export function PracticionersSearchPage() {
         <PracticionerSearchForm
           onSearch={(t) => void runSearch(t)}
           disabled={loading || !authToken}
+          syncedInputValue={urlQuery}
         />
       </section>
 

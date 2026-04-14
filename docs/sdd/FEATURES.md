@@ -62,7 +62,80 @@ Any open questions, design decisions, or links.
 
 ## Backlog
 
-## Done
+### [FEAT-023] Improve Practicioners/Members list in Club details section of the clubs search page. Enrich Practicioner info.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** —
+
+#### Goal
+- Improve Practicioners/Members list in Club details section of the clubs search page. Enrich Practicioner info.
+- Each practicioner row should display the following information:
+  - Practicioner name
+  - License ID
+  - Year Range, License ID.
+- The list should be sorted by Practicioner name ascending.
+- Each Practicioner row should display a button to navigate to the Practicioner search page, prefiltered with that practicioner's name.
+
+#### Acceptance Criteria
+- [x] The Practicioners/Members list is improved.
+- [x] Each practicioner row displays the following information:
+  - Practicioner name
+  - License ID
+  - Year Range, License ID.
+  - The list is sorted by Practicioner name ascending.
+- [x] Row opens `/practicioners?q=…` with that practitioner’s name (prefilled search).
+
+#### Feature Details
+→ See [FEAT-023-DETAILS.md](./FEAT-023-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-022] Add yearRange filter to Practicioners/Members list in Club details section of the clubs search page
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** —
+
+#### Goal
+- Add yearRange filter to Practicioners/Members list in Club details section of the clubs search page. The filter should be a dropdown menu with the options from the `ClubDto.yearRanges`.
+
+#### Acceptance Criteria
+- [x] The yearRange filter is added to the Practicioners/Members list in Club details section of the clubs search page.
+- [x] The yearRange filter is a dropdown menu with the options from the `ClubDto.yearRanges`.
+- [x] The yearRange filter is used to filter the Practicioners/Members list in Club details section of the clubs search page.
+
+#### Feature Details
+→ See [FEAT-022-DETAILS.md](./FEAT-022-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-021] Add club details section to the clubs search page.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** —
+
+#### Goal
+- Add club details section to the clubs search page.
+- The details section should display the following information:
+  - Club name
+  - Club id (full id, monospaced)
+  - Season chips from `ClubDto.yearRanges`
+  - Members list - Practicioners names and license IDs (display `licenseId`; optionally show `licenseTag` too)
+
+#### Acceptance Criteria
+- [x] The club details section is added to the clubs search page.
+- [x] The club details section is displayed when a club item or row is clicked from the clubs search page.
+- [x] The club name is displayed.
+- [x] The club id is displayed (full id, monospaced).
+- [x] The season chips are displayed from `ClubDto.yearRanges`.
+- [x] The members list is displayed - Practicioners names and license IDs (show `licenseId`; optionally `licenseTag`).
+
+#### Feature Details
+→ See [FEAT-021-DETAILS.md](./FEAT-021-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
 
 ### [FEAT-020] Default navigation always to /dashboard
 - **Status:** done

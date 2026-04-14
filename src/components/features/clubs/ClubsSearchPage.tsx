@@ -3,6 +3,7 @@ import type { ClubDto } from '../../../types'
 import { fetchClubsBySimilarName } from '../../../services/clubs'
 import { useAuth } from '../../../store/AuthContext'
 import { Button } from '../../ui/Button'
+import { ClubDetailsSection } from './ClubDetailsSection'
 import { ClubFormModal } from './ClubFormModal'
 import { ClubSearchForm } from './ClubSearchForm'
 import { ClubsPagination } from './ClubsPagination'
@@ -24,6 +25,7 @@ export function ClubsSearchPage() {
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add')
   const [editingClub, setEditingClub] = useState<ClubDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ClubDto | null>(null)
+  const [selectedClub, setSelectedClub] = useState<ClubDto | null>(null)
 
   const pageCount = useMemo(
     () => Math.max(1, Math.ceil(results.length / PAGE_SIZE)),
@@ -47,9 +49,15 @@ export function ClubsSearchPage() {
     try {
       const data = await fetchClubsBySimilarName(authToken, lastSearchTerm)
       setResults(data)
+      setSelectedClub((prev) => {
+        if (!prev) return null
+        const next = data.find((c) => c.id === prev.id)
+        return next ?? null
+      })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Search failed')
       setResults([])
+      setSelectedClub(null)
     } finally {
       setLoading(false)
     }
@@ -71,9 +79,11 @@ export function ClubsSearchPage() {
     try {
       const data = await fetchClubsBySimilarName(authToken, term)
       setResults(data)
+      setSelectedClub(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Search failed')
       setResults([])
+      setSelectedClub(null)
     } finally {
       setLoading(false)
     }
@@ -135,6 +145,8 @@ export function ClubsSearchPage() {
         <>
           <ClubsResultsTable
             clubs={pageItems}
+            selectedClubId={selectedClub?.id ?? null}
+            onSelect={setSelectedClub}
           />
           <ClubsPagination
             page={Math.min(page, pageCount)}
@@ -142,6 +154,14 @@ export function ClubsSearchPage() {
             onPageChange={setPage}
           />
         </>
+      ) : null}
+
+      {selectedClub && authToken ? (
+        <ClubDetailsSection
+          club={selectedClub}
+          authToken={authToken}
+          onClear={() => setSelectedClub(null)}
+        />
       ) : null}
 
       <ClubFormModal
