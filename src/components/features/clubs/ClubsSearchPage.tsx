@@ -135,12 +135,6 @@ export function ClubsSearchPage() {
         <>
           <ClubsResultsTable
             clubs={pageItems}
-            onEdit={(club) => {
-              setFormMode('edit')
-              setEditingClub(club)
-              setFormOpen(true)
-            }}
-            onDelete={setDeleteTarget}
           />
           <ClubsPagination
             page={Math.min(page, pageCount)}

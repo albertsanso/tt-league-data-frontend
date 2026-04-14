@@ -1,10 +1,7 @@
 import type { ClubDto } from '../../../types'
-import { Button } from '../../ui/Button'
 
 export interface ClubsResultsTableProps {
   clubs: ClubDto[]
-  onSelect: (club: ClubDto) => void
-  selectedClubId?: string | null
 }
 
 function shortId(id: string): string {
@@ -12,7 +9,7 @@ function shortId(id: string): string {
   return `${id.slice(0, 8)}…${id.slice(-4)}`
 }
 
-export function ClubsResultsTable({ clubs, onSelect, selectedClubId }: ClubsResultsTableProps) {
+export function ClubsResultsTable({ clubs }: ClubsResultsTableProps) {
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200">
       <table className="w-full min-w-[640px] border-collapse text-left text-sm">
@@ -21,17 +18,13 @@ export function ClubsResultsTable({ clubs, onSelect, selectedClubId }: ClubsResu
             <th className="px-4 py-3 font-semibold text-gray-900">Name</th>
             <th className="px-4 py-3 font-semibold text-gray-900">ID</th>
             <th className="px-4 py-3 font-semibold text-gray-900">Seasons</th>
-            <th className="px-4 py-3 font-semibold text-gray-900">View</th>
           </tr>
         </thead>
         <tbody>
           {clubs.map((club) => (
             <tr
               key={club.id}
-              className={[
-                'border-b border-gray-100 last:border-0',
-                selectedClubId === club.id ? 'bg-blue-50/50' : '',
-              ].join(' ')}
+              className="border-b border-gray-100 last:border-0"
             >
               <td className="px-4 py-3 font-medium text-gray-900">{club.name}</td>
               <td className="px-4 py-3 font-mono text-xs text-gray-600" title={club.id}>
@@ -52,11 +45,6 @@ export function ClubsResultsTable({ clubs, onSelect, selectedClubId }: ClubsResu
                 ) : (
                   <span className="text-gray-400">—</span>
                 )}
-              </td>
-              <td className="px-4 py-3">
-                <Button type="button" variant="secondary" onClick={() => onSelect(club)}>
-                  {selectedClubId === club.id ? 'Selected' : 'View'}
-                </Button>
               </td>
             </tr>
           ))}
