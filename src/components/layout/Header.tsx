@@ -14,7 +14,7 @@ export function Header() {
   return (
     <header className="border-b border-gray-200 bg-white px-6 py-4">
       <nav className="flex items-center gap-6">
-        <Link to="/" className="text-lg font-semibold text-gray-900">
+        <Link to="/dashboard" className="text-lg font-semibold text-gray-900">
           TT League
         </Link>
         <div className="ml-auto">

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import App from './App'
 import { ProtectedRoute } from './components/features/auth/ProtectedRoute'
 import { ProtectedAppLayout } from './components/layout/ProtectedAppLayout'
@@ -11,7 +11,7 @@ const router = createBrowserRouter([
       // Public routes
       {
         index: true,
-        lazy: () => import('./pages/Home').then((m) => ({ Component: m.Home })),
+        element: <Navigate to="/dashboard" replace />,
       },
       {
         path: 'login',

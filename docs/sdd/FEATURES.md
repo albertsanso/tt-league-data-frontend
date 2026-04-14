@@ -64,6 +64,44 @@ Any open questions, design decisions, or links.
 
 ## Done
 
+### [FEAT-020] Default navigation always to /dashboard
+- **Status:** done
+- **Priority:** high
+- **Effort:** small
+- **Depends on:** —
+
+#### Goal
+- Default navigation always to `/dashboard`. If URL is `/` then redirect to `/dashboard`.
+
+#### Acceptance Criteria
+- [x] Visiting `/` redirects to `/dashboard` (replace). Unauthenticated users are still sent to `/login` by `ProtectedRoute` when accessing `/dashboard`.
+
+#### Feature Details
+→ See [FEAT-020-DETAILS.md](./FEAT-020-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
+### [FEAT-019] Improve Clubs search page. Add clubs details section.
+- **Status:** done
+- **Priority:** high
+- **Effort:** medium
+- **Depends on:** —
+
+#### Goal
+- Improve the Clubs search page. Add clubs details section. Show the club details section when a club is selected from the clubs search page.
+- Disable Add, Edit, Delete buttons for clubs.
+
+#### Acceptance Criteria
+- [x] The Clubs search page is improved.
+- [x] The clubs details section is added.
+- [x] The Add, Edit, Delete buttons for clubs are disabled.
+- [x] The clubs details section is displayed when a club is selected from the clubs search page.
+
+#### Feature Details
+→ See [FEAT-019-DETAILS.md](./FEAT-019-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
 ### [FEAT-018] Modify layout for the cards in practicioners matches section
 - **Status:** done
 - **Priority:** high
