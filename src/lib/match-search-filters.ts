@@ -21,6 +21,7 @@ export const MATCH_SEASON_OPTIONS: readonly (string | MatchSearchAll)[] = [
   '2022-2023',
   '2023-2024',
   '2024-2025',
+  '2025-2026',
 ]
 
 /** Same season strings as the matches search page, newest year first (for practitioner details, etc.). */

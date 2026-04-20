@@ -62,6 +62,34 @@ Any open questions, design decisions, or links.
 
 ## Backlog
 
+---
+
+## Done
+
+---
+
+### [FEAT-024] Add last season 2025-2026
+- **Status:** done
+- **Priority:** high
+- **Effort:** small
+- **Depends on:** —
+
+#### Goal
+- Add last season 2025-2026 to the season selector in the Practicioners search page.
+- Add last season 2025-2026 to the season selector in the Clubs search page.
+- Add last season 2025-2026 to the season selector in the Matches search page.
+
+#### Acceptance Criteria
+- [x] Set last season as `2025-2026` in the `LATEST_LEAGUE_SEASON` constant in the `src/lib/season-config.ts` file.
+- [x] The last season 2025-2026 is added to the season selector in the Practicioners search page.
+- [x] The last season 2025-2026 is added to the season selector in the Clubs search page.
+- [x] The last season 2025-2026 is added to the season selector in the Matches search page.
+
+#### Feature Details
+→ See [FEAT-024-DETAILS.md](./FEAT-024-DETAILS.md) for a detailed breakdown of the feature, build plan, and implementation steps.
+
+---
+
 ### [FEAT-023] Improve Practicioners/Members list in Club details section of the clubs search page. Enrich Practicioner info.
 - **Status:** done
 - **Priority:** high

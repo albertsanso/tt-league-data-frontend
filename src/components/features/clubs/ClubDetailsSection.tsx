@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { ClubDto, EnrichedClubMemberDto, SeasonPlayerDto } from '../../../types'
+import { MATCH_SEASON_OPTIONS } from '../../../lib/match-search-filters'
+import { LATEST_LEAGUE_SEASON } from '../../../lib/season-config'
 import { cn } from '../../../lib/utils'
 import { fetchEnrichedClubMembersByClubId } from '../../../services/club-members'
 import { fetchSeasonPlayersByPracticionerId } from '../../../services/players'
@@ -149,7 +151,22 @@ export function ClubDetailsSection({ club, authToken, onClear }: ClubDetailsSect
 
   const yearRangeLabel = yearRangeColumnLabel(selectedYearRange)
 
-  const hasYearRangeOptions = Boolean(club.yearRanges?.length)
+  /** API `yearRanges` plus latest league season so the filter always offers the current label (FEAT-024). */
+  const memberYearRangeOptions = useMemo(() => {
+    const order = new Map<string, number>()
+    let i = 0
+    for (const s of MATCH_SEASON_OPTIONS) {
+      if (typeof s === 'string') order.set(s, i++)
+    }
+    const seen = new Set<string>()
+    for (const y of [...(club.yearRanges ?? []), LATEST_LEAGUE_SEASON]) {
+      const t = y?.trim()
+      if (t) seen.add(t)
+    }
+    return [...seen].sort((a, b) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9))
+  }, [club.yearRanges])
+
+  const hasYearRangeOptions = memberYearRangeOptions.length > 0
 
   return (
     <section
@@ -226,7 +243,7 @@ export function ClubDetailsSection({ club, authToken, onClear }: ClubDetailsSect
                     }}
                   >
                     <option value="all">All</option>
-                    {(club.yearRanges ?? []).map((y) => (
+                    {memberYearRangeOptions.map((y) => (
                       <option key={y} value={y}>
                         {y}
                       </option>
